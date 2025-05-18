@@ -1,25 +1,11 @@
 {
   "version": 2,
-  "builds": [
-    { 
-      "src": "not-a-label/frontend/package.json", 
-      "use": "@vercel/next"
-    }
-  ],
+  "buildCommand": "cd not-a-label/frontend && npm run build",
+  "outputDirectory": "not-a-label/frontend/.next",
+  "framework": "nextjs",
   "routes": [
-    {
-      "handle": "filesystem"
-    },
-    {
-      "src": "/(.*)",
-      "dest": "not-a-label/frontend/$1",
-      "continue": true
-    },
-    {
-      "src": "/((?!api/.*).*)",
-      "status": 404,
-      "dest": "not-a-label/frontend/404.html"
-    }
+    { "handle": "filesystem" },
+    { "src": "/(.*)", "status": 404, "dest": "/404.html" }
   ],
   "github": {
     "silent": true
