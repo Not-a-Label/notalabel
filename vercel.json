@@ -1,42 +1,22 @@
 {
   "version": 2,
-  "github": {
-    "silent": true
-  },
   "builds": [
     { 
       "src": "not-a-label/frontend/package.json", 
-      "use": "@vercel/next",
-      "config": { 
-        "path": "not-a-label/frontend" 
-      }
-    },
-    { 
-      "src": "not-a-label/backend/src/index.ts", 
-      "use": "@vercel/node" 
+      "use": "@vercel/next"
     }
   ],
   "routes": [
-    {
-      "src": "/api/(.*)",
-      "dest": "not-a-label/backend/src/index.ts"
-    },
     {
       "src": "/(.*)",
       "dest": "not-a-label/frontend/$1"
     }
   ],
-  "env": {
-    "DATABASE_URL": "postgres://production-db-url-to-be-added-on-deploy",
-    "PORT": "4000",
-    "FRONTEND_URL": "https://not-a-label.art",
-    "API_URL": "https://api.not-a-label.art",
-    "JWT_SECRET": "replace-with-secure-random-string-on-deploy",
-    "CORS_ORIGIN": "https://not-a-label.art"
+  "github": {
+    "silent": true
   },
   "domains": [
     "not-a-label.art",
-    "www.not-a-label.art",
-    "api.not-a-label.art"
+    "www.not-a-label.art"
   ]
 } 
