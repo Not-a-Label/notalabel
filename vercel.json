@@ -12,7 +12,13 @@
     },
     {
       "src": "/(.*)",
-      "dest": "not-a-label/frontend/$1"
+      "dest": "not-a-label/frontend/$1",
+      "continue": true
+    },
+    {
+      "src": "/((?!api/.*).*)",
+      "status": 404,
+      "dest": "not-a-label/frontend/404.html"
     }
   ],
   "github": {
