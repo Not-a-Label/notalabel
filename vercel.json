@@ -1,7 +1,7 @@
 {
   "version": 2,
-  "buildCommand": "cd not-a-label/frontend && npm run build",
-  "outputDirectory": "not-a-label/frontend/.next",
+  "buildCommand": "npm run build",
+  "outputDirectory": ".next",
   "framework": "nextjs",
   "routes": [
     { "handle": "filesystem" },
