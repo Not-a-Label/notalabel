@@ -2,7 +2,6 @@
   "framework": "nextjs",
   "buildCommand": "npm run build",
   "outputDirectory": ".next",
-  "rootDirectory": "not-a-label/frontend",
   "installCommand": "npm install",
   "env": {
     "NEXT_PUBLIC_API_URL": "https://not-a-label-backend-aq1xsono3-kentinos-projects-1378a9e3.vercel.app"
