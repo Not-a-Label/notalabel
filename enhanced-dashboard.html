@@ -1,0 +1,921 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Not a Label - Professional Music Platform</title>
+    <link rel="icon" type="image/png" href="logo-nal.png">
+    <link rel="apple-touch-icon" href="logo-nal.png">
+    <meta name="theme-color" content="#1a8f8f">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.socket.io/4.5.0/socket.io.min.js"></script>
+    <style>
+        .gradient-bg {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        .glass-effect {
+            backdrop-filter: blur(10px);
+            background-color: rgba(0, 0, 0, 0.5);
+        }
+    </style>
+</head>
+<body class="bg-gray-900 text-white">
+    <div id="app" class="min-h-screen">
+        <!-- Navigation -->
+        <nav class="glass-effect border-b border-gray-800 sticky top-0 z-50">
+            <div class="container mx-auto px-4 py-4">
+                <div class="flex justify-between items-center">
+                    <div class="flex items-center space-x-8">
+                        <div class="flex items-center">
+                            <img src="logo-nal.png" alt="Not a Label" class="h-10 w-auto mr-3">
+                            <h1 class="text-2xl font-bold">Not a Label</h1>
+                        </div>
+                        <div class="hidden md:flex space-x-6">
+                            <button onclick="showSection('dashboard')" class="nav-link hover:text-purple-400">Dashboard</button>
+                            <button onclick="showSection('music')" class="nav-link hover:text-purple-400">Music</button>
+                            <button onclick="showSection('revenue')" class="nav-link hover:text-purple-400">Revenue</button>
+                            <button onclick="showSection('ai-tools')" class="nav-link hover:text-purple-400">AI Tools</button>
+                            <button onclick="showSection('community')" class="nav-link hover:text-purple-400">Community</button>
+                        </div>
+                    </div>
+                    <div class="flex items-center space-x-4">
+                        <!-- Notifications -->
+                        <div class="relative">
+                            <button onclick="toggleNotifications()" class="relative p-2 text-gray-400 hover:text-white">
+                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-5 5-5-5h5V7a5 5 0 1110 0v10z"></path>
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.73 21a2 2 0 01-3.46 0"></path>
+                                </svg>
+                                <span id="notificationBadge" class="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center hidden">0</span>
+                            </button>
+                            
+                            <!-- Notifications Dropdown -->
+                            <div id="notificationsDropdown" class="absolute right-0 mt-2 w-80 bg-gray-800 rounded-lg shadow-xl border border-gray-700 hidden z-50">
+                                <div class="p-4 border-b border-gray-700">
+                                    <div class="flex justify-between items-center">
+                                        <h3 class="text-lg font-semibold">Notifications</h3>
+                                        <button onclick="markAllNotificationsRead()" class="text-sm text-purple-400 hover:text-purple-300">Mark all read</button>
+                                    </div>
+                                </div>
+                                <div id="notificationsList" class="max-h-96 overflow-y-auto">
+                                    <div class="p-4 text-center text-gray-400">
+                                        No notifications yet
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <span id="userDisplay" class="text-sm text-gray-400"></span>
+                        <button id="authBtn" onclick="handleAuth()" class="bg-purple-600 px-4 py-2 rounded hover:bg-purple-700">Login</button>
+                    </div>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Main Content -->
+        <main class="container mx-auto px-4 py-8">
+            <!-- Dashboard Section -->
+            <section id="dashboard" class="section">
+                <h2 class="text-3xl font-bold mb-6">Dashboard Overview</h2>
+                
+                <!-- Stats Grid -->
+                <div class="grid md:grid-cols-4 gap-6 mb-8">
+                    <div class="bg-gray-800 p-6 rounded-lg">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <p class="text-gray-400 text-sm">Total Revenue</p>
+                                <p class="text-3xl font-bold mt-2">$12,543</p>
+                                <p class="text-green-400 text-sm mt-2">+23% this month</p>
+                            </div>
+                            <span class="text-2xl">💰</span>
+                        </div>
+                    </div>
+                    <div class="bg-gray-800 p-6 rounded-lg">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <p class="text-gray-400 text-sm">Total Streams</p>
+                                <p class="text-3xl font-bold mt-2">543K</p>
+                                <p class="text-green-400 text-sm mt-2">+15% this month</p>
+                            </div>
+                            <span class="text-2xl">🎧</span>
+                        </div>
+                    </div>
+                    <div class="bg-gray-800 p-6 rounded-lg">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <p class="text-gray-400 text-sm">Fan Club Members</p>
+                                <p class="text-3xl font-bold mt-2">1,234</p>
+                                <p class="text-green-400 text-sm mt-2">+45 new</p>
+                            </div>
+                            <span class="text-2xl">👥</span>
+                        </div>
+                    </div>
+                    <div class="bg-gray-800 p-6 rounded-lg">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <p class="text-gray-400 text-sm">Active Tracks</p>
+                                <p class="text-3xl font-bold mt-2">24</p>
+                                <p class="text-gray-400 text-sm mt-2">Across 5 platforms</p>
+                            </div>
+                            <span class="text-2xl">🎵</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Charts -->
+                <div class="grid md:grid-cols-2 gap-6">
+                    <div class="bg-gray-800 p-6 rounded-lg">
+                        <h3 class="text-xl font-bold mb-4">Revenue Trend</h3>
+                        <canvas id="revenueChart" height="200"></canvas>
+                    </div>
+                    <div class="bg-gray-800 p-6 rounded-lg">
+                        <h3 class="text-xl font-bold mb-4">Platform Distribution</h3>
+                        <canvas id="platformChart" height="200"></canvas>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Music Section -->
+            <section id="music" class="section hidden">
+                <div class="flex justify-between items-center mb-6">
+                    <h2 class="text-3xl font-bold">Music Library</h2>
+                    <button onclick="showUploadModal()" class="bg-purple-600 px-4 py-2 rounded hover:bg-purple-700">
+                        Upload New Track
+                    </button>
+                </div>
+
+                <!-- Track List -->
+                <div class="bg-gray-800 rounded-lg overflow-hidden">
+                    <table class="w-full">
+                        <thead class="bg-gray-900">
+                            <tr>
+                                <th class="px-6 py-3 text-left">Track</th>
+                                <th class="px-6 py-3 text-left">Streams</th>
+                                <th class="px-6 py-3 text-left">Revenue</th>
+                                <th class="px-6 py-3 text-left">Status</th>
+                                <th class="px-6 py-3 text-left">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tracksList">
+                            <!-- Tracks will be loaded here -->
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Revenue Section -->
+            <section id="revenue" class="section hidden">
+                <h2 class="text-3xl font-bold mb-6">Revenue & Royalties</h2>
+
+                <!-- Revenue Overview -->
+                <div class="grid md:grid-cols-3 gap-6 mb-8">
+                    <div class="bg-gray-800 p-6 rounded-lg">
+                        <h3 class="text-xl font-bold mb-4">Revenue Breakdown</h3>
+                        <div class="space-y-3">
+                            <div class="flex justify-between">
+                                <span>Streaming</span>
+                                <span class="font-bold">$8,234</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span>Downloads</span>
+                                <span class="font-bold">$2,156</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span>Merchandise</span>
+                                <span class="font-bold">$1,543</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span>Live Shows</span>
+                                <span class="font-bold">$610</span>
+                            </div>
+                            <hr class="border-gray-700">
+                            <div class="flex justify-between text-lg font-bold">
+                                <span>Total</span>
+                                <span>$12,543</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-gray-800 p-6 rounded-lg">
+                        <h3 class="text-xl font-bold mb-4">Expenses</h3>
+                        <div class="space-y-3">
+                            <div class="flex justify-between">
+                                <span>Recording</span>
+                                <span class="text-red-400">-$2,100</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span>Marketing</span>
+                                <span class="text-red-400">-$850</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span>Distribution</span>
+                                <span class="text-red-400">-$320</span>
+                            </div>
+                            <hr class="border-gray-700">
+                            <div class="flex justify-between text-lg font-bold">
+                                <span>Net Profit</span>
+                                <span class="text-green-400">$9,273</span>
+                            </div>
+                        </div>
+                        <button class="mt-4 text-sm text-purple-400 hover:underline">Add Expense</button>
+                    </div>
+
+                    <div class="bg-gray-800 p-6 rounded-lg">
+                        <h3 class="text-xl font-bold mb-4">Pending Payouts</h3>
+                        <div class="text-center py-8">
+                            <p class="text-4xl font-bold text-green-400">$3,456</p>
+                            <p class="text-gray-400 mt-2">Available for withdrawal</p>
+                            <button class="mt-4 bg-green-600 px-6 py-2 rounded hover:bg-green-700">
+                                Request Payout
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Royalty Splits -->
+                <div class="bg-gray-800 p-6 rounded-lg">
+                    <h3 class="text-xl font-bold mb-4">Royalty Splits</h3>
+                    <p class="text-gray-400 mb-4">Configure how revenue is split between collaborators</p>
+                    <button class="bg-purple-600 px-4 py-2 rounded hover:bg-purple-700">
+                        Manage Splits
+                    </button>
+                </div>
+            </section>
+
+            <!-- AI Tools Section -->
+            <section id="ai-tools" class="section hidden">
+                <h2 class="text-3xl font-bold mb-6">AI Creative Tools</h2>
+
+                <div class="grid md:grid-cols-2 gap-6">
+                    <!-- Lyrics Generator -->
+                    <div class="bg-gray-800 p-6 rounded-lg">
+                        <h3 class="text-xl font-bold mb-4">🎤 Lyrics Generator</h3>
+                        <div class="space-y-4">
+                            <div>
+                                <label class="block text-sm mb-2">Genre</label>
+                                <select id="lyricsGenre" class="w-full px-3 py-2 bg-gray-700 rounded">
+                                    <option>Pop</option>
+                                    <option>Rock</option>
+                                    <option>Hip-Hop</option>
+                                    <option>Electronic</option>
+                                    <option>R&B</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-sm mb-2">Mood</label>
+                                <select id="lyricsMood" class="w-full px-3 py-2 bg-gray-700 rounded">
+                                    <option>Happy</option>
+                                    <option>Sad</option>
+                                    <option>Energetic</option>
+                                    <option>Romantic</option>
+                                    <option>Inspirational</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-sm mb-2">Theme</label>
+                                <input id="lyricsTheme" type="text" placeholder="e.g., summer love, overcoming challenges" 
+                                       class="w-full px-3 py-2 bg-gray-700 rounded">
+                            </div>
+                            <button onclick="generateLyrics()" class="w-full bg-purple-600 py-2 rounded hover:bg-purple-700">
+                                Generate Lyrics
+                            </button>
+                        </div>
+                        <div id="lyricsResult" class="mt-4 p-4 bg-gray-900 rounded hidden">
+                            <!-- Generated lyrics will appear here -->
+                        </div>
+                    </div>
+
+                    <!-- Marketing Content -->
+                    <div class="bg-gray-800 p-6 rounded-lg">
+                        <h3 class="text-xl font-bold mb-4">📱 Marketing Content</h3>
+                        <div class="space-y-4">
+                            <div>
+                                <label class="block text-sm mb-2">Track Title</label>
+                                <input id="marketingTitle" type="text" placeholder="Your track name" 
+                                       class="w-full px-3 py-2 bg-gray-700 rounded">
+                            </div>
+                            <div>
+                                <label class="block text-sm mb-2">Release Date</label>
+                                <input id="marketingDate" type="date" class="w-full px-3 py-2 bg-gray-700 rounded">
+                            </div>
+                            <button onclick="generateMarketing()" class="w-full bg-purple-600 py-2 rounded hover:bg-purple-700">
+                                Generate Social Media Posts
+                            </button>
+                        </div>
+                        <div id="marketingResult" class="mt-4 space-y-2 hidden">
+                            <!-- Generated content will appear here -->
+                        </div>
+                    </div>
+
+                    <!-- Trend Analysis -->
+                    <div class="bg-gray-800 p-6 rounded-lg">
+                        <h3 class="text-xl font-bold mb-4">📊 Music Trend Analysis</h3>
+                        <button onclick="analyzeTrends()" class="w-full bg-purple-600 py-2 rounded hover:bg-purple-700">
+                            Analyze Current Trends
+                        </button>
+                        <div id="trendsResult" class="mt-4 hidden">
+                            <!-- Analysis will appear here -->
+                        </div>
+                    </div>
+
+                    <!-- Collaboration Finder -->
+                    <div class="bg-gray-800 p-6 rounded-lg">
+                        <h3 class="text-xl font-bold mb-4">🤝 Find Collaborators</h3>
+                        <button onclick="findCollaborators()" class="w-full bg-purple-600 py-2 rounded hover:bg-purple-700">
+                            Find Matching Artists
+                        </button>
+                        <div id="collabResult" class="mt-4 space-y-2 hidden">
+                            <!-- Matches will appear here -->
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Community Section -->
+            <section id="community" class="section hidden">
+                <h2 class="text-3xl font-bold mb-6">Fan Community</h2>
+
+                <div class="grid md:grid-cols-3 gap-6">
+                    <!-- Fan Club Stats -->
+                    <div class="bg-gray-800 p-6 rounded-lg">
+                        <h3 class="text-xl font-bold mb-4">Fan Club Overview</h3>
+                        <div class="space-y-3">
+                            <div class="flex justify-between">
+                                <span>Free Members</span>
+                                <span class="font-bold">892</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span>Premium Members</span>
+                                <span class="font-bold">267</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span>VIP Members</span>
+                                <span class="font-bold">75</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span>Monthly Revenue</span>
+                                <span class="font-bold text-green-400">$2,340</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Recent Activity -->
+                    <div class="bg-gray-800 p-6 rounded-lg">
+                        <h3 class="text-xl font-bold mb-4">Recent Activity</h3>
+                        <div class="space-y-3 text-sm">
+                            <div class="flex items-start">
+                                <span class="text-green-400 mr-2">●</span>
+                                <div>
+                                    <p>Sarah J. became a VIP member</p>
+                                    <p class="text-gray-500">2 hours ago</p>
+                                </div>
+                            </div>
+                            <div class="flex items-start">
+                                <span class="text-blue-400 mr-2">●</span>
+                                <div>
+                                    <p>Mike R. commented on "Summer Nights"</p>
+                                    <p class="text-gray-500">5 hours ago</p>
+                                </div>
+                            </div>
+                            <div class="flex items-start">
+                                <span class="text-purple-400 mr-2">●</span>
+                                <div>
+                                    <p>45 new fans joined this week</p>
+                                    <p class="text-gray-500">Weekly summary</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Quick Actions -->
+                    <div class="bg-gray-800 p-6 rounded-lg">
+                        <h3 class="text-xl font-bold mb-4">Engage Your Fans</h3>
+                        <div class="space-y-3">
+                            <button class="w-full bg-purple-600 py-2 rounded hover:bg-purple-700">
+                                Post Update
+                            </button>
+                            <button class="w-full bg-gray-700 py-2 rounded hover:bg-gray-600">
+                                Share Exclusive Content
+                            </button>
+                            <button class="w-full bg-gray-700 py-2 rounded hover:bg-gray-600">
+                                Create Poll
+                            </button>
+                            <button class="w-full bg-gray-700 py-2 rounded hover:bg-gray-600">
+                                Schedule Livestream
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script>
+        // Global state
+        let authToken = localStorage.getItem('token');
+        let currentUser = null;
+        const API_URL = 'http://localhost:4000';
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            if (authToken) checkAuth();
+            showSection('dashboard');
+            initCharts();
+        });
+
+        // Section navigation
+        function showSection(section) {
+            document.querySelectorAll('.section').forEach(s => s.classList.add('hidden'));
+            document.getElementById(section).classList.remove('hidden');
+            
+            // Update nav styles
+            document.querySelectorAll('.nav-link').forEach(link => {
+                link.classList.remove('text-purple-400');
+            });
+            event.target?.classList.add('text-purple-400');
+        }
+
+        // Authentication
+        async function handleAuth() {
+            if (authToken) {
+                logout();
+            } else {
+                // Simple login for demo
+                const email = prompt('Email:', 'testartist@example.com');
+                const password = prompt('Password:', 'password123');
+                
+                if (email && password) {
+                    try {
+                        const response = await fetch(`${API_URL}/api/auth/login`, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ email, password })
+                        });
+                        
+                        const data = await response.json();
+                        if (data.success) {
+                            authToken = data.token;
+                            localStorage.setItem('token', authToken);
+                            currentUser = data.user;
+                            updateAuthUI();
+                            loadDashboardData();
+                        } else {
+                            alert(data.message);
+                        }
+                    } catch (error) {
+                        alert('Login failed: ' + error.message);
+                    }
+                }
+            }
+        }
+
+        async function checkAuth() {
+            try {
+                const response = await fetch(`${API_URL}/api/auth/verify`, {
+                    headers: { 'Authorization': `Bearer ${authToken}` }
+                });
+                if (response.ok) {
+                    const data = await response.json();
+                    currentUser = data.user;
+                    updateAuthUI();
+                    loadDashboardData();
+                } else {
+                    logout();
+                }
+            } catch (error) {
+                console.error('Auth check failed:', error);
+            }
+        }
+
+        function logout() {
+            authToken = null;
+            currentUser = null;
+            localStorage.removeItem('token');
+            updateAuthUI();
+        }
+
+        function updateAuthUI() {
+            const authBtn = document.getElementById('authBtn');
+            const userDisplay = document.getElementById('userDisplay');
+            
+            if (authToken && currentUser) {
+                authBtn.textContent = 'Logout';
+                userDisplay.textContent = `Welcome, ${currentUser.fullName}`;
+            } else {
+                authBtn.textContent = 'Login';
+                userDisplay.textContent = '';
+            }
+        }
+
+        // Dashboard data
+        async function loadDashboardData() {
+            // Load analytics, revenue, etc.
+            // For demo, using mock data
+        }
+
+        // Charts
+        function initCharts() {
+            // Revenue Chart
+            const revenueCtx = document.getElementById('revenueChart').getContext('2d');
+            new Chart(revenueCtx, {
+                type: 'line',
+                data: {
+                    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+                    datasets: [{
+                        label: 'Revenue',
+                        data: [1200, 1900, 1500, 2200, 2800, 3200],
+                        borderColor: 'rgb(147, 51, 234)',
+                        backgroundColor: 'rgba(147, 51, 234, 0.1)',
+                        tension: 0.3
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                callback: value => '$' + value
+                            }
+                        }
+                    }
+                }
+            });
+
+            // Platform Chart
+            const platformCtx = document.getElementById('platformChart').getContext('2d');
+            new Chart(platformCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Spotify', 'Apple Music', 'YouTube', 'SoundCloud'],
+                    datasets: [{
+                        data: [45, 25, 20, 10],
+                        backgroundColor: [
+                            '#1DB954',
+                            '#FA233B',
+                            '#FF0000',
+                            '#FF8800'
+                        ]
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false
+                }
+            });
+        }
+
+        // AI Tools
+        async function generateLyrics() {
+            const genre = document.getElementById('lyricsGenre').value;
+            const mood = document.getElementById('lyricsMood').value;
+            const theme = document.getElementById('lyricsTheme').value;
+            
+            if (!theme) {
+                alert('Please enter a theme');
+                return;
+            }
+            
+            const resultDiv = document.getElementById('lyricsResult');
+            resultDiv.classList.remove('hidden');
+            resultDiv.innerHTML = '<p class="text-gray-400">Generating lyrics...</p>';
+            
+            try {
+                const response = await fetch(`${API_URL}/api/ai-enhanced/lyrics`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${authToken}`
+                    },
+                    body: JSON.stringify({ genre, mood, theme })
+                });
+                
+                const data = await response.json();
+                if (data.success) {
+                    resultDiv.innerHTML = `<pre class="whitespace-pre-wrap">${data.lyrics}</pre>`;
+                } else {
+                    resultDiv.innerHTML = `<p class="text-red-400">Failed to generate lyrics</p>`;
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `<p class="text-red-400">Error: ${error.message}</p>`;
+            }
+        }
+
+        async function generateMarketing() {
+            const title = document.getElementById('marketingTitle').value;
+            const releaseDate = document.getElementById('marketingDate').value;
+            
+            if (!title || !releaseDate) {
+                alert('Please fill in all fields');
+                return;
+            }
+            
+            const resultDiv = document.getElementById('marketingResult');
+            resultDiv.classList.remove('hidden');
+            resultDiv.innerHTML = '<p class="text-gray-400">Generating content...</p>';
+            
+            // Mock response for demo
+            setTimeout(() => {
+                resultDiv.innerHTML = `
+                    <div class="space-y-4">
+                        <div class="p-3 bg-gray-900 rounded">
+                            <p class="text-sm text-gray-400 mb-1">Twitter</p>
+                            <p>🎵 "${title}" drops ${new Date(releaseDate).toLocaleDateString()}! Get ready for something special 🔥</p>
+                        </div>
+                        <div class="p-3 bg-gray-900 rounded">
+                            <p class="text-sm text-gray-400 mb-1">Instagram</p>
+                            <p>New music alert! 🎵✨ "${title}" coming soon...</p>
+                        </div>
+                        <div class="p-3 bg-gray-900 rounded">
+                            <p class="text-sm text-gray-400 mb-1">TikTok</p>
+                            <p>POV: Your new favorite song drops in 3 days 👀 #NewMusic #${title.replace(/\s+/g, '')}</p>
+                        </div>
+                    </div>
+                `;
+            }, 2000);
+        }
+
+        async function analyzeTrends() {
+            const resultDiv = document.getElementById('trendsResult');
+            resultDiv.classList.remove('hidden');
+            resultDiv.innerHTML = '<p class="text-gray-400">Analyzing trends...</p>';
+            
+            // Mock response for demo
+            setTimeout(() => {
+                resultDiv.innerHTML = `
+                    <div class="space-y-3">
+                        <div class="flex justify-between">
+                            <span>Trending Genre:</span>
+                            <span class="text-purple-400">Afrobeats Fusion</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span>Optimal BPM:</span>
+                            <span class="text-purple-400">120-128</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span>Energy Level:</span>
+                            <span class="text-purple-400">High (85%)</span>
+                        </div>
+                        <p class="text-sm text-gray-400 mt-3">
+                            Recommendation: Consider incorporating Afrobeat elements into your next release for increased playlist placement potential.
+                        </p>
+                    </div>
+                `;
+            }, 2000);
+        }
+
+        async function findCollaborators() {
+            const resultDiv = document.getElementById('collabResult');
+            resultDiv.classList.remove('hidden');
+            resultDiv.innerHTML = '<p class="text-gray-400">Finding matches...</p>';
+            
+            // Mock response for demo
+            setTimeout(() => {
+                resultDiv.innerHTML = `
+                    <div class="space-y-3">
+                        <div class="p-3 bg-gray-900 rounded flex justify-between items-center">
+                            <div>
+                                <p class="font-bold">Luna Waves</p>
+                                <p class="text-sm text-gray-400">92% match - Electronic/Pop</p>
+                            </div>
+                            <button class="text-purple-400 hover:text-purple-300">Connect</button>
+                        </div>
+                        <div class="p-3 bg-gray-900 rounded flex justify-between items-center">
+                            <div>
+                                <p class="font-bold">Digital Dreams</p>
+                                <p class="text-sm text-gray-400">87% match - Synthwave</p>
+                            </div>
+                            <button class="text-purple-400 hover:text-purple-300">Connect</button>
+                        </div>
+                        <div class="p-3 bg-gray-900 rounded flex justify-between items-center">
+                            <div>
+                                <p class="font-bold">Echo Valley</p>
+                                <p class="text-sm text-gray-400">85% match - Indie Electronic</p>
+                            </div>
+                            <button class="text-purple-400 hover:text-purple-300">Connect</button>
+                        </div>
+                    </div>
+                `;
+            }, 2000);
+        }
+
+        // Notification System
+        let notificationSocket = null;
+        let notifications = [];
+        let currentUser = null;
+
+        function initializeNotifications() {
+            // Check if user is logged in (mock for now)
+            currentUser = localStorage.getItem('currentUser') || 'demo-user-123';
+            
+            // Connect to notification server - use production URL if available
+            const wsUrl = window.location.hostname === 'www.not-a-label.art' 
+                ? 'wss://ws.not-a-label.art' 
+                : 'http://localhost:4001';
+            notificationSocket = io(wsUrl);
+            
+            notificationSocket.on('connect', () => {
+                console.log('Connected to notification service');
+                notificationSocket.emit('join_user', currentUser);
+                loadNotifications();
+            });
+            
+            notificationSocket.on('new_notification', (notification) => {
+                console.log('New notification received:', notification);
+                notifications.unshift(notification);
+                updateNotificationUI();
+                showNotificationToast(notification);
+                
+                // Show browser notification if supported
+                if (Notification.permission === 'granted') {
+                    new Notification(notification.title, {
+                        body: notification.message,
+                        icon: 'logo-nal.png'
+                    });
+                }
+            });
+            
+            notificationSocket.on('unread_count', (data) => {
+                updateNotificationBadge(data.count);
+            });
+            
+            notificationSocket.on('notification_read', (data) => {
+                if (data.success) {
+                    const notification = notifications.find(n => n.id === data.notificationId);
+                    if (notification) {
+                        notification.isRead = true;
+                        updateNotificationUI();
+                    }
+                }
+            });
+            
+            // Request notification permission
+            if (Notification.permission === 'default') {
+                Notification.requestPermission();
+            }
+        }
+
+        function toggleNotifications() {
+            const dropdown = document.getElementById('notificationsDropdown');
+            dropdown.classList.toggle('hidden');
+        }
+
+        function updateNotificationBadge(count) {
+            const badge = document.getElementById('notificationBadge');
+            if (count > 0) {
+                badge.textContent = count;
+                badge.classList.remove('hidden');
+            } else {
+                badge.classList.add('hidden');
+            }
+        }
+
+        function updateNotificationUI() {
+            const container = document.getElementById('notificationsList');
+            
+            if (notifications.length === 0) {
+                container.innerHTML = '<div class="p-4 text-center text-gray-400">No notifications yet</div>';
+                return;
+            }
+            
+            const unreadCount = notifications.filter(n => !n.isRead).length;
+            updateNotificationBadge(unreadCount);
+            
+            container.innerHTML = notifications.slice(0, 10).map(notification => `
+                <div class="p-4 border-b border-gray-700 cursor-pointer hover:bg-gray-700 ${notification.isRead ? 'opacity-70' : ''}" 
+                     onclick="markNotificationRead('${notification.id}')">
+                    <div class="flex items-start space-x-3">
+                        <span class="text-xl">${getNotificationIcon(notification.type)}</span>
+                        <div class="flex-1">
+                            <p class="font-semibold text-sm">${notification.title}</p>
+                            <p class="text-gray-400 text-sm mt-1">${notification.message}</p>
+                            <p class="text-gray-500 text-xs mt-2">${new Date(notification.createdAt).toLocaleString()}</p>
+                        </div>
+                        ${!notification.isRead ? '<div class="w-2 h-2 bg-purple-500 rounded-full"></div>' : ''}
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function getNotificationIcon(type) {
+            const icons = {
+                revenue: '💰',
+                stream_milestone: '🎵',
+                fan_interaction: '👥',
+                distribution: '📡',
+                collaboration: '🤝',
+                system: '⚙️',
+                promotion: '📢'
+            };
+            return icons[type] || '🔔';
+        }
+
+        function markNotificationRead(notificationId) {
+            if (notificationSocket) {
+                notificationSocket.emit('mark_read', notificationId);
+            }
+        }
+
+        function markAllNotificationsRead() {
+            notifications.forEach(notification => {
+                if (!notification.isRead) {
+                    markNotificationRead(notification.id);
+                }
+            });
+        }
+
+        async function loadNotifications() {
+            try {
+                const apiUrl = window.location.hostname === 'www.not-a-label.art' 
+                    ? `https://api.not-a-label.art/api/notifications/${currentUser}`
+                    : `http://localhost:4001/api/notifications/${currentUser}`;
+                const response = await fetch(apiUrl);
+                const data = await response.json();
+                notifications = data.notifications;
+                updateNotificationUI();
+                updateNotificationBadge(data.unreadCount);
+            } catch (error) {
+                console.error('Error loading notifications:', error);
+            }
+        }
+
+        function showNotificationToast(notification) {
+            // Create toast notification
+            const toast = document.createElement('div');
+            toast.className = 'fixed top-20 right-4 bg-gray-800 border border-gray-600 rounded-lg p-4 shadow-lg z-50 max-w-sm';
+            toast.innerHTML = `
+                <div class="flex items-start space-x-3">
+                    <span class="text-xl">${getNotificationIcon(notification.type)}</span>
+                    <div class="flex-1">
+                        <p class="font-semibold text-sm">${notification.title}</p>
+                        <p class="text-gray-400 text-sm mt-1">${notification.message}</p>
+                    </div>
+                    <button onclick="this.parentElement.parentElement.remove()" class="text-gray-500 hover:text-white">×</button>
+                </div>
+            `;
+            
+            document.body.appendChild(toast);
+            
+            // Auto remove after 5 seconds
+            setTimeout(() => {
+                if (toast.parentNode) {
+                    toast.remove();
+                }
+            }, 5000);
+        }
+
+        // Demo functions to test notifications
+        function triggerRevenueNotification() {
+            const apiUrl = window.location.hostname === 'www.not-a-label.art' 
+                ? 'https://api.not-a-label.art/api/test/revenue-notification'
+                : 'http://localhost:4001/api/test/revenue-notification';
+            fetch(apiUrl, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    userId: currentUser,
+                    amount: (Math.random() * 100).toFixed(2),
+                    source: ['Spotify', 'Apple Music', 'YouTube Music'][Math.floor(Math.random() * 3)]
+                })
+            });
+        }
+
+        function triggerStreamMilestone() {
+            const apiUrl = window.location.hostname === 'www.not-a-label.art' 
+                ? 'https://api.not-a-label.art/api/test/stream-milestone'
+                : 'http://localhost:4001/api/test/stream-milestone';
+            fetch(apiUrl, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    userId: currentUser,
+                    trackTitle: ['Summer Vibes', 'Midnight Dreams', 'Electric Soul'][Math.floor(Math.random() * 3)],
+                    streams: [1000, 5000, 10000, 50000][Math.floor(Math.random() * 4)]
+                })
+            });
+        }
+
+        // Initialize notifications when page loads
+        document.addEventListener('DOMContentLoaded', () => {
+            setTimeout(() => {
+                initializeNotifications();
+            }, 1000);
+        });
+
+        // Close notifications dropdown when clicking outside
+        document.addEventListener('click', (event) => {
+            const dropdown = document.getElementById('notificationsDropdown');
+            const button = event.target.closest('[onclick="toggleNotifications()"]');
+            
+            if (!button && !dropdown.contains(event.target)) {
+                dropdown.classList.add('hidden');
+            }
+        });
+    </script>
+</body>
+</html>

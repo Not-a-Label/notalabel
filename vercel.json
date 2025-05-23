@@ -1,9 +1,25 @@
 {
-  "framework": "nextjs",
-  "buildCommand": "npm run build",
-  "outputDirectory": ".next",
-  "installCommand": "npm install",
+  "version": 2,
+  "builds": [
+    {
+      "src": "src/index.ts",
+      "use": "@vercel/node"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/(.*)",
+      "dest": "src/index.ts"
+    }
+  ],
   "env": {
-    "NEXT_PUBLIC_API_URL": "https://not-a-label-backend-aq1xsono3-kentinos-projects-1378a9e3.vercel.app"
+    "NODE_ENV": "production",
+    "DATABASE_URL": "@database-url",
+    "REDIS_URL": "@redis-url",
+    "REDIS_ENABLED": "true",
+    "OPENAI_API_KEY": "@openai-api-key",
+    "JWT_SECRET": "@jwt-secret",
+    "PORT": "4000",
+    "CORS_ORIGIN": "https://not-a-label-frontend.vercel.app"
   }
 } 
