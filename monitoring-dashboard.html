@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Not-a-Label Monitoring Dashboard</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background-color: #0a0a0a;
+            color: #e0e0e0;
+            line-height: 1.6;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #333;
+        }
+
+        h1 {
+            font-size: 2rem;
+            font-weight: 600;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .refresh-info {
+            font-size: 0.9rem;
+            color: #666;
+        }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .card {
+            background-color: #1a1a1a;
+            border-radius: 12px;
+            padding: 20px;
+            border: 1px solid #333;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 16px rgba(102, 126, 234, 0.1);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .card-title {
+            font-size: 1.2rem;
+            font-weight: 500;
+        }
+
+        .status-indicator {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        .status-online {
+            background-color: #4ade80;
+        }
+
+        .status-warning {
+            background-color: #fbbf24;
+        }
+
+        .status-offline {
+            background-color: #ef4444;
+        }
+
+        @keyframes pulse {
+            0% {
+                box-shadow: 0 0 0 0 rgba(74, 222, 128, 0.7);
+            }
+            70% {
+                box-shadow: 0 0 0 10px rgba(74, 222, 128, 0);
+            }
+            100% {
+                box-shadow: 0 0 0 0 rgba(74, 222, 128, 0);
+            }
+        }
+
+        .service-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .service-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px;
+            background-color: #262626;
+            border-radius: 8px;
+            transition: background-color 0.2s;
+        }
+
+        .service-item:hover {
+            background-color: #2d2d2d;
+        }
+
+        .service-name {
+            font-weight: 500;
+        }
+
+        .service-status {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.9rem;
+        }
+
+        .metric-value {
+            font-size: 2.5rem;
+            font-weight: 600;
+            margin: 10px 0;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .metric-label {
+            color: #999;
+            font-size: 0.9rem;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background-color: #333;
+            border-radius: 4px;
+            overflow: hidden;
+            margin-top: 10px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            transition: width 0.3s ease;
+        }
+
+        .activity-feed {
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .activity-item {
+            padding: 12px;
+            border-bottom: 1px solid #333;
+            font-size: 0.9rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .activity-item:last-child {
+            border-bottom: none;
+        }
+
+        .activity-time {
+            color: #666;
+            font-size: 0.8rem;
+        }
+
+        .action-buttons {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 12px;
+        }
+
+        .action-btn {
+            padding: 12px 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            text-align: center;
+        }
+
+        .action-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+        }
+
+        .action-btn:active {
+            transform: translateY(0);
+        }
+
+        /* Scrollbar styling */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #1a1a1a;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #444;
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #555;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Not-a-Label Monitoring Dashboard</h1>
+            <div class="refresh-info">
+                <span id="last-update">Last updated: </span>
+                <span style="margin-left: 10px;">Auto-refresh: 30s</span>
+            </div>
+        </header>
+
+        <div class="dashboard-grid">
+            <!-- Service Status Card -->
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">Service Status</h2>
+                    <div class="status-indicator status-online"></div>
+                </div>
+                <div class="service-list">
+                    <div class="service-item">
+                        <span class="service-name">Backend API</span>
+                        <div class="service-status">
+                            <span>Online</span>
+                            <div class="status-indicator status-online"></div>
+                        </div>
+                    </div>
+                    <div class="service-item">
+                        <span class="service-name">WebSocket Server</span>
+                        <div class="service-status">
+                            <span>Online</span>
+                            <div class="status-indicator status-online"></div>
+                        </div>
+                    </div>
+                    <div class="service-item">
+                        <span class="service-name">Database</span>
+                        <div class="service-status">
+                            <span>Warning</span>
+                            <div class="status-indicator status-warning"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- CPU Usage Card -->
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">CPU Usage</h2>
+                </div>
+                <div class="metric-value" id="cpu-usage">45%</div>
+                <div class="metric-label">Average across all cores</div>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="cpu-progress" style="width: 45%"></div>
+                </div>
+            </div>
+
+            <!-- Memory Usage Card -->
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">Memory Usage</h2>
+                </div>
+                <div class="metric-value" id="memory-usage">68%</div>
+                <div class="metric-label">12.2 GB / 16 GB</div>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="memory-progress" style="width: 68%"></div>
+                </div>
+            </div>
+
+            <!-- Disk Usage Card -->
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">Disk Usage</h2>
+                </div>
+                <div class="metric-value" id="disk-usage">72%</div>
+                <div class="metric-label">360 GB / 500 GB</div>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="disk-progress" style="width: 72%"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Activity Feed -->
+        <div class="card" style="margin-bottom: 20px;">
+            <div class="card-header">
+                <h2 class="card-title">Recent Activity</h2>
+            </div>
+            <div class="activity-feed" id="activity-feed">
+                <div class="activity-item">
+                    <span>New artist registration: @creativemind</span>
+                    <span class="activity-time">2 mins ago</span>
+                </div>
+                <div class="activity-item">
+                    <span>Release uploaded: "Midnight Dreams" by SoundWave</span>
+                    <span class="activity-time">5 mins ago</span>
+                </div>
+                <div class="activity-item">
+                    <span>Database backup completed successfully</span>
+                    <span class="activity-time">15 mins ago</span>
+                </div>
+                <div class="activity-item">
+                    <span>High memory usage alert (85%)</span>
+                    <span class="activity-time">22 mins ago</span>
+                </div>
+                <div class="activity-item">
+                    <span>WebSocket connection spike: 1,245 users</span>
+                    <span class="activity-time">30 mins ago</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="card">
+            <div class="card-header">
+                <h2 class="card-title">Quick Actions</h2>
+            </div>
+            <div class="action-buttons">
+                <button class="action-btn" onclick="restartService('backend')">Restart Backend</button>
+                <button class="action-btn" onclick="restartService('websocket')">Restart WebSocket</button>
+                <button class="action-btn" onclick="clearCache()">Clear Cache</button>
+                <button class="action-btn" onclick="runBackup()">Run Backup</button>
+                <button class="action-btn" onclick="viewLogs()">View Logs</button>
+                <button class="action-btn" onclick="exportMetrics()">Export Metrics</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Update timestamp
+        function updateTimestamp() {
+            const now = new Date();
+            document.getElementById('last-update').textContent = 'Last updated: ' + now.toLocaleTimeString();
+        }
+
+        // Simulate metric updates
+        function updateMetrics() {
+            // CPU
+            const cpuValue = Math.floor(Math.random() * 30) + 40; // 40-70%
+            document.getElementById('cpu-usage').textContent = cpuValue + '%';
+            document.getElementById('cpu-progress').style.width = cpuValue + '%';
+
+            // Memory
+            const memoryValue = Math.floor(Math.random() * 20) + 60; // 60-80%
+            document.getElementById('memory-usage').textContent = memoryValue + '%';
+            document.getElementById('memory-progress').style.width = memoryValue + '%';
+            
+            // Disk (changes slowly)
+            const currentDisk = parseInt(document.getElementById('disk-usage').textContent);
+            const diskChange = Math.random() > 0.8 ? 1 : 0;
+            const diskValue = Math.min(90, currentDisk + diskChange);
+            document.getElementById('disk-usage').textContent = diskValue + '%';
+            document.getElementById('disk-progress').style.width = diskValue + '%';
+
+            updateTimestamp();
+        }
+
+        // Simulate new activity
+        function addActivity() {
+            const activities = [
+                'New release uploaded',
+                'User registration',
+                'Payment processed',
+                'Cache cleared',
+                'API request spike detected',
+                'Backup completed',
+                'Security scan passed'
+            ];
+            
+            const activity = activities[Math.floor(Math.random() * activities.length)];
+            const feed = document.getElementById('activity-feed');
+            const newItem = document.createElement('div');
+            newItem.className = 'activity-item';
+            newItem.innerHTML = `
+                <span>${activity}</span>
+                <span class="activity-time">just now</span>
+            `;
+            
+            feed.insertBefore(newItem, feed.firstChild);
+            
+            // Remove old items if too many
+            while (feed.children.length > 10) {
+                feed.removeChild(feed.lastChild);
+            }
+        }
+
+        // Quick action handlers
+        function restartService(service) {
+            alert(`Restarting ${service} service...`);
+        }
+
+        function clearCache() {
+            alert('Clearing cache...');
+        }
+
+        function runBackup() {
+            alert('Running backup...');
+        }
+
+        function viewLogs() {
+            alert('Opening log viewer...');
+        }
+
+        function exportMetrics() {
+            alert('Exporting metrics...');
+        }
+
+        // Initialize
+        updateTimestamp();
+        
+        // Auto-refresh every 30 seconds
+        setInterval(updateMetrics, 30000);
+        
+        // Update metrics every 5 seconds for demo
+        setInterval(updateMetrics, 5000);
+        
+        // Add new activity every 10-20 seconds
+        setInterval(() => {
+            if (Math.random() > 0.5) {
+                addActivity();
+            }
+        }, 15000);
+    </script>
+</body>
+</html>
