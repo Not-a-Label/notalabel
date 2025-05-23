@@ -1,0 +1,32 @@
+name: Deploy to Production
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    name: Deploy to not-a-label.art
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+    
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Deploy to server
+      env:
+        DEPLOY_KEY: ${{ secrets.DEPLOY_KEY }}
+        DEPLOY_HOST: ${{ secrets.DEPLOY_HOST }}
+        DEPLOY_USER: ${{ secrets.DEPLOY_USER }}
+      run: |
+        echo "Deployment steps would go here"
+        echo "1. SSH to server"
+        echo "2. Pull latest code"
+        echo "3. Run docker-compose"
+        echo "4. Run migrations"
+        
+    - name: Notify deployment
+      if: always()
+      run: |
+        echo "Deployment status: ${{ job.status }}"
