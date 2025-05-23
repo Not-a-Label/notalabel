@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Not a Label - Empowering Independent Artists</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .gradient-bg {
+            background: linear-gradient(135deg, #1a8f8f 0%, #45d65a 100%);
+        }
+        .logo-glow {
+            filter: drop-shadow(0 0 30px rgba(69, 214, 90, 0.5));
+        }
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+        }
+        .float-animation {
+            animation: float 6s ease-in-out infinite;
+        }
+    </style>
+</head>
+<body class="bg-gray-900 text-white min-h-screen flex flex-col">
+    <!-- Hero Section -->
+    <div class="gradient-bg flex-1">
+        <div class="container mx-auto px-4 py-16">
+            <!-- Logo and Title -->
+            <div class="text-center mb-12">
+                <img src="logo-nal.png" alt="Not a Label" class="h-48 w-auto mx-auto mb-8 logo-glow float-animation">
+                <h1 class="text-5xl font-bold mb-4">Welcome to Not a Label</h1>
+                <p class="text-2xl text-gray-100">The Complete Platform for Independent Artists</p>
+            </div>
+
+            <!-- Features Grid -->
+            <div class="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto mt-16">
+                <div class="bg-white/10 backdrop-blur-md rounded-lg p-6 hover:bg-white/20 transition">
+                    <div class="text-4xl mb-4">🎵</div>
+                    <h3 class="text-xl font-bold mb-2">Music Management</h3>
+                    <p class="text-gray-200">Upload, distribute, and manage your music across all major platforms with one click.</p>
+                </div>
+                <div class="bg-white/10 backdrop-blur-md rounded-lg p-6 hover:bg-white/20 transition">
+                    <div class="text-4xl mb-4">📊</div>
+                    <h3 class="text-xl font-bold mb-2">Analytics & Revenue</h3>
+                    <p class="text-gray-200">Track streams, revenue, and fan engagement with real-time analytics and insights.</p>
+                </div>
+                <div class="bg-white/10 backdrop-blur-md rounded-lg p-6 hover:bg-white/20 transition">
+                    <div class="text-4xl mb-4">🤖</div>
+                    <h3 class="text-xl font-bold mb-2">AI Creative Tools</h3>
+                    <p class="text-gray-200">Generate lyrics, marketing content, and get personalized career coaching with AI.</p>
+                </div>
+            </div>
+
+            <!-- CTA Buttons -->
+            <div class="text-center mt-16">
+                <a href="enhanced-dashboard.html" class="inline-block bg-white text-gray-900 px-8 py-4 rounded-lg text-lg font-bold hover:bg-gray-100 transition transform hover:scale-105 mr-4">
+                    Launch Dashboard
+                </a>
+                <a href="webapp.html" class="inline-block bg-transparent border-2 border-white px-8 py-4 rounded-lg text-lg font-bold hover:bg-white hover:text-gray-900 transition transform hover:scale-105">
+                    Explore Platform
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Stats Section -->
+    <div class="bg-gray-800 py-12">
+        <div class="container mx-auto px-4">
+            <div class="grid md:grid-cols-4 gap-8 text-center">
+                <div>
+                    <p class="text-4xl font-bold text-green-400">10K+</p>
+                    <p class="text-gray-400 mt-2">Active Artists</p>
+                </div>
+                <div>
+                    <p class="text-4xl font-bold text-green-400">50M+</p>
+                    <p class="text-gray-400 mt-2">Total Streams</p>
+                </div>
+                <div>
+                    <p class="text-4xl font-bold text-green-400">$2M+</p>
+                    <p class="text-gray-400 mt-2">Revenue Generated</p>
+                </div>
+                <div>
+                    <p class="text-4xl font-bold text-green-400">95%</p>
+                    <p class="text-gray-400 mt-2">Artist Satisfaction</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Features Detail -->
+    <div class="bg-gray-900 py-16">
+        <div class="container mx-auto px-4">
+            <h2 class="text-3xl font-bold text-center mb-12">Everything You Need to Succeed</h2>
+            
+            <div class="grid md:grid-cols-2 gap-12 max-w-4xl mx-auto">
+                <div class="flex items-start">
+                    <div class="text-2xl mr-4 text-green-400">✓</div>
+                    <div>
+                        <h3 class="text-xl font-bold mb-2">Multi-Platform Distribution</h3>
+                        <p class="text-gray-400">Distribute to Spotify, Apple Music, YouTube, and 50+ platforms instantly.</p>
+                    </div>
+                </div>
+                <div class="flex items-start">
+                    <div class="text-2xl mr-4 text-green-400">✓</div>
+                    <div>
+                        <h3 class="text-xl font-bold mb-2">Revenue Management</h3>
+                        <p class="text-gray-400">Track earnings, manage royalty splits, and get paid faster.</p>
+                    </div>
+                </div>
+                <div class="flex items-start">
+                    <div class="text-2xl mr-4 text-green-400">✓</div>
+                    <div>
+                        <h3 class="text-xl font-bold mb-2">Fan Community</h3>
+                        <p class="text-gray-400">Build and engage with your fanbase through exclusive content and rewards.</p>
+                    </div>
+                </div>
+                <div class="flex items-start">
+                    <div class="text-2xl mr-4 text-green-400">✓</div>
+                    <div>
+                        <h3 class="text-xl font-bold mb-2">AI-Powered Tools</h3>
+                        <p class="text-gray-400">Generate content, analyze trends, and get personalized recommendations.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 py-8 mt-auto">
+        <div class="container mx-auto px-4 text-center">
+            <img src="logo-nal.png" alt="Not a Label" class="h-12 w-auto mx-auto mb-4 opacity-50">
+            <p class="text-gray-400">© 2024 Not a Label. Empowering independent artists worldwide.</p>
+            <div class="mt-4 space-x-6">
+                <a href="#" class="text-gray-400 hover:text-white">About</a>
+                <a href="#" class="text-gray-400 hover:text-white">Terms</a>
+                <a href="#" class="text-gray-400 hover:text-white">Privacy</a>
+                <a href="#" class="text-gray-400 hover:text-white">Contact</a>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Add smooth scrolling and animations
+        document.addEventListener('DOMContentLoaded', () => {
+            // Fade in elements on scroll
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('opacity-100');
+                        entry.target.classList.remove('opacity-0');
+                    }
+                });
+            });
+
+            // Observe all feature cards
+            document.querySelectorAll('.bg-white\\/10').forEach(el => {
+                el.classList.add('opacity-0', 'transition-opacity', 'duration-1000');
+                observer.observe(el);
+            });
+        });
+    </script>
+</body>
+</html>

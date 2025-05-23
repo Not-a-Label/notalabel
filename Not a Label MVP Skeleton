@@ -1,0 +1,19 @@
+I’ve set up the monorepo skeleton for the Not a Label MVP:
+
+* **Frontend (Next.js + React + TypeScript + Tailwind)**
+
+  * Public homepage and placeholder dashboard
+  * AI chat component wired to call `/api/ai`
+* **Backend (Node.js + Express + TypeScript)**
+
+  * Auth routes (register/login)
+  * Profile, Analytics, AI endpoints
+  * PostgreSQL integration and environment config
+
+Next steps:
+
+1. **Install dependencies** in both `frontend/` and `backend/` and run `dev` scripts.
+2. **Define database schema** (e.g., create `users`, `artists`, and `analytics` tables).
+3. **Implement auth middleware** in the backend to secure protected routes.
+4. **Expand frontend** with profile editing, stream data visualizations, and AI prompt templates.
+5. **Polish UI/UX** and configure hosting (Vercel for frontend, Heroku/AWS for backend).
