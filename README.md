@@ -22,6 +22,12 @@
 
 Not a Label is a comprehensive platform for independent musicians that combines music management, revenue tracking, AI-powered tools, and social media automation. Built with modern web technologies and designed to scale.
 
+### 🟢 Live Production
+- **Platform**: http://159.89.247.208
+- **Domain**: http://not-a-label.art (DNS propagating)
+- **Status**: http://159.89.247.208/status/
+- **API Health**: http://159.89.247.208/api/health
+
 ### 🏗️ Tech Stack
 
 - **Backend**: Node.js, Express, TypeScript, SQLite/PostgreSQL
@@ -118,26 +124,38 @@ Not a Label is a comprehensive platform for independent musicians that combines 
 
 ## 🌐 Production Deployment
 
-### Using Docker (Recommended)
+### Current Production Status
+- **🟢 Live**: http://159.89.247.208
+- **🟡 Domain**: http://not-a-label.art (DNS propagating, SSL auto-configures)
+- **📊 Status Dashboard**: http://159.89.247.208/status/
+
+### Deployment Instructions
 
 1. **Configure your domain DNS**
    ```
-   A record: @ → YOUR_SERVER_IP
-   A record: www → YOUR_SERVER_IP
-   A record: api → YOUR_SERVER_IP
-   A record: ws → YOUR_SERVER_IP
+   A record: @ → 159.89.247.208
+   A record: www → 159.89.247.208
    ```
 
-2. **Deploy with Docker Compose**
+2. **Deploy to DigitalOcean**
    ```bash
+   # Automated deployment
    ./deploy-production.sh
+   
+   # Or manual deployment
+   ssh root@YOUR_SERVER_IP
+   git clone https://github.com/Not-a-Label/notalabel.git
+   cd notalabel
+   ./setup-production.sh
    ```
 
-3. **Access your live site**
-   - https://www.not-a-label.art
+3. **Monitor deployment**
+   - PM2 Dashboard: `pm2 monit`
+   - Logs: `pm2 logs`
+   - Status: http://YOUR_SERVER_IP/status/
 
 ### Manual Deployment
-See [DOMAIN-SETUP-GUIDE.md](DOMAIN-SETUP-GUIDE.md) for detailed instructions.
+See [DEPLOYMENT_STATUS.md](DEPLOYMENT_STATUS.md) for current deployment details.
 
 ## 📚 API Documentation
 
