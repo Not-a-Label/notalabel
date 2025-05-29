@@ -1,0 +1,577 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Not a Label - Revenue Dashboard</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f5f7fa;
+            color: #333;
+        }
+        
+        .dashboard-header {
+            background: linear-gradient(135deg, #0f2027 0%, #203a43 50%, #2c5364 100%);
+            color: white;
+            padding: 30px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .header-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .dashboard-title h1 {
+            font-size: 2em;
+            margin-bottom: 5px;
+        }
+        
+        .date-range {
+            background: rgba(255,255,255,0.1);
+            padding: 10px 20px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 30px;
+        }
+        
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 25px;
+            margin-bottom: 40px;
+        }
+        
+        .metric-card {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 2px 15px rgba(0,0,0,0.08);
+            transition: transform 0.3s ease;
+        }
+        
+        .metric-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 25px rgba(0,0,0,0.15);
+        }
+        
+        .metric-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .metric-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5em;
+        }
+        
+        .revenue-icon {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        
+        .streams-icon {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        }
+        
+        .sales-icon {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+        }
+        
+        .growth-icon {
+            background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+        }
+        
+        .metric-value {
+            font-size: 2.2em;
+            font-weight: 700;
+            color: #2c3e50;
+            margin-bottom: 5px;
+        }
+        
+        .metric-label {
+            color: #7f8c8d;
+            font-size: 0.9em;
+        }
+        
+        .metric-change {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 20px;
+            font-size: 0.8em;
+            font-weight: 600;
+        }
+        
+        .positive {
+            background: #d4edda;
+            color: #155724;
+        }
+        
+        .negative {
+            background: #f8d7da;
+            color: #721c24;
+        }
+        
+        .charts-section {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 25px;
+            margin-bottom: 40px;
+        }
+        
+        .chart-card {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 2px 15px rgba(0,0,0,0.08);
+        }
+        
+        .chart-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .chart-title {
+            font-size: 1.3em;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+        
+        .chart-options {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .chart-option {
+            padding: 6px 12px;
+            background: #f5f7fa;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.85em;
+            transition: all 0.3s ease;
+        }
+        
+        .chart-option.active {
+            background: #667eea;
+            color: white;
+        }
+        
+        .revenue-chart {
+            height: 300px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            display: flex;
+            align-items: flex-end;
+            padding: 20px;
+            gap: 10px;
+        }
+        
+        .chart-bar {
+            flex: 1;
+            background: linear-gradient(to top, #667eea, #764ba2);
+            border-radius: 8px 8px 0 0;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+        
+        .chart-bar:hover {
+            transform: scaleY(1.05);
+        }
+        
+        .chart-bar::after {
+            content: attr(data-value);
+            position: absolute;
+            top: -25px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 0.8em;
+            font-weight: 600;
+            color: #667eea;
+        }
+        
+        .revenue-sources {
+            list-style: none;
+        }
+        
+        .source-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 0;
+            border-bottom: 1px solid #f5f7fa;
+        }
+        
+        .source-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .source-color {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
+        
+        .source-value {
+            font-weight: 600;
+            color: #2c3e50;
+        }
+        
+        .transactions-section {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 2px 15px rgba(0,0,0,0.08);
+        }
+        
+        .transactions-table {
+            width: 100%;
+            margin-top: 20px;
+        }
+        
+        .transactions-table th {
+            text-align: left;
+            padding: 12px;
+            border-bottom: 2px solid #f5f7fa;
+            color: #7f8c8d;
+            font-weight: 600;
+            font-size: 0.9em;
+        }
+        
+        .transactions-table td {
+            padding: 15px 12px;
+            border-bottom: 1px solid #f5f7fa;
+        }
+        
+        .transaction-type {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.85em;
+            font-weight: 600;
+        }
+        
+        .type-streaming {
+            background: #e3f2fd;
+            color: #1976d2;
+        }
+        
+        .type-sale {
+            background: #f3e5f5;
+            color: #7b1fa2;
+        }
+        
+        .type-merch {
+            background: #e8f5e9;
+            color: #388e3c;
+        }
+        
+        .amount {
+            font-weight: 600;
+            color: #2c3e50;
+        }
+        
+        .export-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .export-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+        }
+        
+        @media (max-width: 768px) {
+            .charts-section {
+                grid-template-columns: 1fr;
+            }
+            
+            .header-content {
+                flex-direction: column;
+                gap: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard-header">
+        <div class="header-content">
+            <div class="dashboard-title">
+                <h1>💰 Revenue Dashboard</h1>
+                <p>Track your music earnings in real-time</p>
+            </div>
+            <div class="date-range">
+                <span>📅</span>
+                <span>Last 30 Days</span>
+            </div>
+        </div>
+    </div>
+    
+    <div class="container">
+        <div class="metrics-grid">
+            <div class="metric-card">
+                <div class="metric-header">
+                    <div>
+                        <div class="metric-value">$3,847</div>
+                        <div class="metric-label">Total Revenue</div>
+                    </div>
+                    <div class="metric-icon revenue-icon">💵</div>
+                </div>
+                <span class="metric-change positive">+12.5% vs last month</span>
+            </div>
+            
+            <div class="metric-card">
+                <div class="metric-header">
+                    <div>
+                        <div class="metric-value">287.5K</div>
+                        <div class="metric-label">Total Streams</div>
+                    </div>
+                    <div class="metric-icon streams-icon">🎵</div>
+                </div>
+                <span class="metric-change positive">+18.3% vs last month</span>
+            </div>
+            
+            <div class="metric-card">
+                <div class="metric-header">
+                    <div>
+                        <div class="metric-value">$542</div>
+                        <div class="metric-label">Digital Sales</div>
+                    </div>
+                    <div class="metric-icon sales-icon">💿</div>
+                </div>
+                <span class="metric-change negative">-5.2% vs last month</span>
+            </div>
+            
+            <div class="metric-card">
+                <div class="metric-header">
+                    <div>
+                        <div class="metric-value">23%</div>
+                        <div class="metric-label">Growth Rate</div>
+                    </div>
+                    <div class="metric-icon growth-icon">📈</div>
+                </div>
+                <span class="metric-change positive">+8.7% increase</span>
+            </div>
+        </div>
+        
+        <div class="charts-section">
+            <div class="chart-card">
+                <div class="chart-header">
+                    <h3 class="chart-title">Revenue Trend</h3>
+                    <div class="chart-options">
+                        <button class="chart-option active">Weekly</button>
+                        <button class="chart-option">Monthly</button>
+                        <button class="chart-option">Yearly</button>
+                    </div>
+                </div>
+                <div class="revenue-chart">
+                    <div class="chart-bar" style="height: 60%" data-value="$680"></div>
+                    <div class="chart-bar" style="height: 75%" data-value="$850"></div>
+                    <div class="chart-bar" style="height: 80%" data-value="$920"></div>
+                    <div class="chart-bar" style="height: 65%" data-value="$740"></div>
+                    <div class="chart-bar" style="height: 90%" data-value="$1,050"></div>
+                    <div class="chart-bar" style="height: 95%" data-value="$1,120"></div>
+                    <div class="chart-bar" style="height: 85%" data-value="$980"></div>
+                </div>
+            </div>
+            
+            <div class="chart-card">
+                <div class="chart-header">
+                    <h3 class="chart-title">Revenue Sources</h3>
+                </div>
+                <ul class="revenue-sources">
+                    <li class="source-item">
+                        <div class="source-info">
+                            <div class="source-color" style="background: #667eea"></div>
+                            <span>Streaming</span>
+                        </div>
+                        <span class="source-value">$2,654</span>
+                    </li>
+                    <li class="source-item">
+                        <div class="source-info">
+                            <div class="source-color" style="background: #f093fb"></div>
+                            <span>Digital Sales</span>
+                        </div>
+                        <span class="source-value">$542</span>
+                    </li>
+                    <li class="source-item">
+                        <div class="source-info">
+                            <div class="source-color" style="background: #4facfe"></div>
+                            <span>Merchandise</span>
+                        </div>
+                        <span class="source-value">$387</span>
+                    </li>
+                    <li class="source-item">
+                        <div class="source-info">
+                            <div class="source-color" style="background: #43e97b"></div>
+                            <span>Live Shows</span>
+                        </div>
+                        <span class="source-value">$264</span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        
+        <div class="transactions-section">
+            <div class="chart-header">
+                <h3 class="chart-title">Recent Transactions</h3>
+                <button class="export-btn">📊 Export Report</button>
+            </div>
+            
+            <table class="transactions-table">
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Source</th>
+                        <th>Type</th>
+                        <th>Description</th>
+                        <th>Amount</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>May 27, 2025</td>
+                        <td>Spotify</td>
+                        <td><span class="transaction-type type-streaming">Streaming</span></td>
+                        <td>Monthly royalties - 45.2K streams</td>
+                        <td class="amount">+$158.20</td>
+                    </tr>
+                    <tr>
+                        <td>May 26, 2025</td>
+                        <td>Bandcamp</td>
+                        <td><span class="transaction-type type-sale">Sale</span></td>
+                        <td>Album sale - "Midnight Dreams"</td>
+                        <td class="amount">+$12.00</td>
+                    </tr>
+                    <tr>
+                        <td>May 25, 2025</td>
+                        <td>Not a Label Store</td>
+                        <td><span class="transaction-type type-merch">Merch</span></td>
+                        <td>T-shirt sale (2 items)</td>
+                        <td class="amount">+$48.00</td>
+                    </tr>
+                    <tr>
+                        <td>May 24, 2025</td>
+                        <td>Apple Music</td>
+                        <td><span class="transaction-type type-streaming">Streaming</span></td>
+                        <td>Weekly royalties - 12.8K streams</td>
+                        <td class="amount">+$89.60</td>
+                    </tr>
+                    <tr>
+                        <td>May 23, 2025</td>
+                        <td>YouTube Music</td>
+                        <td><span class="transaction-type type-streaming">Streaming</span></td>
+                        <td>Ad revenue share</td>
+                        <td class="amount">+$34.50</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    
+    <script>
+        // Chart option switching
+        document.querySelectorAll('.chart-option').forEach(btn => {
+            btn.addEventListener('click', function() {
+                document.querySelectorAll('.chart-option').forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+                
+                // Update chart data based on selected period
+                updateChart(this.textContent);
+            });
+        });
+        
+        function updateChart(period) {
+            const bars = document.querySelectorAll('.chart-bar');
+            
+            // Simulate different data for different periods
+            bars.forEach((bar, index) => {
+                const randomHeight = Math.floor(Math.random() * 40) + 60;
+                const randomValue = Math.floor(Math.random() * 500) + 600;
+                
+                bar.style.height = randomHeight + '%';
+                bar.setAttribute('data-value', '$' + randomValue);
+            });
+        }
+        
+        // Export functionality
+        document.querySelector('.export-btn').addEventListener('click', function() {
+            alert('Revenue report exported successfully! Check your downloads folder.');
+        });
+        
+        // Animate numbers on load
+        function animateValue(element, start, end, duration) {
+            const range = end - start;
+            const increment = range / (duration / 16);
+            let current = start;
+            
+            const timer = setInterval(() => {
+                current += increment;
+                if (current >= end) {
+                    current = end;
+                    clearInterval(timer);
+                }
+                
+                if (element.textContent.includes('$')) {
+                    element.textContent = '$' + Math.floor(current).toLocaleString();
+                } else if (element.textContent.includes('K')) {
+                    element.textContent = (current / 1000).toFixed(1) + 'K';
+                } else if (element.textContent.includes('%')) {
+                    element.textContent = Math.floor(current) + '%';
+                } else {
+                    element.textContent = Math.floor(current).toLocaleString();
+                }
+            }, 16);
+        }
+        
+        // Animate metrics on page load
+        window.addEventListener('load', () => {
+            const metrics = [
+                { element: document.querySelector('.metric-value'), end: 3847 },
+                { element: document.querySelectorAll('.metric-value')[1], end: 287500 },
+                { element: document.querySelectorAll('.metric-value')[2], end: 542 },
+                { element: document.querySelectorAll('.metric-value')[3], end: 23 }
+            ];
+            
+            metrics.forEach(metric => {
+                if (metric.element) {
+                    animateValue(metric.element, 0, metric.end, 1000);
+                }
+            });
+        });
+    </script>
+</body>
+</html>

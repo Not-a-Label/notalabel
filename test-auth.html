@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Auth</title>
+</head>
+<body>
+    <h1>Test Authentication</h1>
+    
+    <div id="register">
+        <h2>Register</h2>
+        <input type="text" id="reg-username" placeholder="Username" value="testuser2">
+        <input type="email" id="reg-email" placeholder="Email" value="test2@example.com">
+        <input type="password" id="reg-password" placeholder="Password" value="password123">
+        <button onclick="register()">Register</button>
+    </div>
+    
+    <div id="login">
+        <h2>Login</h2>
+        <input type="email" id="login-email" placeholder="Email" value="test2@example.com">
+        <input type="password" id="login-password" placeholder="Password" value="password123">
+        <button onclick="login()">Login</button>
+    </div>
+    
+    <div id="result"></div>
+    
+    <script>
+        const API_URL = 'http://159.89.247.208/api';
+        
+        async function register() {
+            const username = document.getElementById('reg-username').value;
+            const email = document.getElementById('reg-email').value;
+            const password = document.getElementById('reg-password').value;
+            
+            try {
+                const response = await fetch(`${API_URL}/auth/register`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ username, email, password, role: 'artist' }),
+                });
+                
+                const data = await response.json();
+                document.getElementById('result').innerHTML = `<pre>${JSON.stringify(data, null, 2)}</pre>`;
+                
+                if (data.token) {
+                    localStorage.setItem('auth_token', data.token);
+                    console.log('Token saved:', data.token);
+                }
+            } catch (error) {
+                document.getElementById('result').innerHTML = `Error: ${error.message}`;
+            }
+        }
+        
+        async function login() {
+            const email = document.getElementById('login-email').value;
+            const password = document.getElementById('login-password').value;
+            
+            try {
+                const response = await fetch(`${API_URL}/auth/login`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ email, password }),
+                });
+                
+                const data = await response.json();
+                document.getElementById('result').innerHTML = `<pre>${JSON.stringify(data, null, 2)}</pre>`;
+                
+                if (data.token) {
+                    localStorage.setItem('auth_token', data.token);
+                    console.log('Token saved:', data.token);
+                    console.log('Login successful! Redirecting to dashboard...');
+                    // In the real app, this would be: router.push('/dashboard')
+                    setTimeout(() => {
+                        window.location.href = 'http://159.89.247.208/dashboard';
+                    }, 1000);
+                }
+            } catch (error) {
+                document.getElementById('result').innerHTML = `Error: ${error.message}`;
+            }
+        }
+    </script>
+</body>
+</html>

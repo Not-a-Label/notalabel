@@ -1,0 +1,798 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Not a Label API Documentation</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-json.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-bash.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: #f5f5f7;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 2rem 0;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        header h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+        }
+        
+        header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+            margin-top: 0.5rem;
+        }
+        
+        nav {
+            background: white;
+            padding: 1rem 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        nav ul {
+            list-style: none;
+            display: flex;
+            gap: 2rem;
+            flex-wrap: wrap;
+        }
+        
+        nav a {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+        
+        nav a:hover {
+            color: #764ba2;
+        }
+        
+        main {
+            display: grid;
+            grid-template-columns: 250px 1fr;
+            gap: 2rem;
+            margin-top: 2rem;
+            min-height: calc(100vh - 300px);
+        }
+        
+        .sidebar {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 8px;
+            height: fit-content;
+            position: sticky;
+            top: 80px;
+        }
+        
+        .sidebar h3 {
+            color: #667eea;
+            margin-bottom: 1rem;
+            font-size: 1.1rem;
+        }
+        
+        .sidebar ul {
+            list-style: none;
+        }
+        
+        .sidebar li {
+            margin-bottom: 0.5rem;
+        }
+        
+        .sidebar a {
+            color: #666;
+            text-decoration: none;
+            font-size: 0.95rem;
+            transition: color 0.3s;
+        }
+        
+        .sidebar a:hover {
+            color: #667eea;
+        }
+        
+        .content {
+            background: white;
+            padding: 2rem;
+            border-radius: 8px;
+        }
+        
+        .endpoint {
+            margin-bottom: 3rem;
+            padding-bottom: 3rem;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .endpoint:last-child {
+            border-bottom: none;
+        }
+        
+        .endpoint h2 {
+            color: #333;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .method {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 4px;
+            font-size: 0.875rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+        
+        .method.get { background: #10b981; color: white; }
+        .method.post { background: #3b82f6; color: white; }
+        .method.put { background: #f59e0b; color: white; }
+        .method.delete { background: #ef4444; color: white; }
+        
+        .endpoint-url {
+            background: #f3f4f6;
+            padding: 0.75rem 1rem;
+            border-radius: 6px;
+            font-family: 'Courier New', monospace;
+            margin: 1rem 0;
+            font-size: 0.95rem;
+        }
+        
+        .description {
+            color: #666;
+            margin-bottom: 1.5rem;
+        }
+        
+        .parameters, .responses {
+            margin-top: 2rem;
+        }
+        
+        .parameters h3, .responses h3 {
+            color: #333;
+            margin-bottom: 1rem;
+            font-size: 1.2rem;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+        }
+        
+        th, td {
+            text-align: left;
+            padding: 0.75rem;
+            border-bottom: 1px solid #eee;
+        }
+        
+        th {
+            background: #f9fafb;
+            font-weight: 600;
+            color: #333;
+        }
+        
+        .required {
+            color: #ef4444;
+            font-weight: 600;
+        }
+        
+        .example {
+            margin-top: 1.5rem;
+        }
+        
+        .example h4 {
+            color: #333;
+            margin-bottom: 0.5rem;
+        }
+        
+        pre {
+            border-radius: 6px;
+            overflow-x: auto;
+            margin-top: 0.5rem;
+        }
+        
+        code {
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+        }
+        
+        .response-code {
+            display: inline-block;
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-weight: 600;
+            font-size: 0.875rem;
+            margin-right: 0.5rem;
+        }
+        
+        .response-code.success { background: #d1fae5; color: #065f46; }
+        .response-code.error { background: #fee2e2; color: #991b1b; }
+        
+        footer {
+            background: #333;
+            color: white;
+            text-align: center;
+            padding: 2rem 0;
+            margin-top: 4rem;
+        }
+        
+        @media (max-width: 768px) {
+            main {
+                grid-template-columns: 1fr;
+            }
+            
+            .sidebar {
+                position: static;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1>Not a Label API Documentation</h1>
+            <p>Empowering independent musicians with AI-powered tools</p>
+        </div>
+    </header>
+    
+    <nav>
+        <div class="container">
+            <ul>
+                <li><a href="#introduction">Introduction</a></li>
+                <li><a href="#authentication">Authentication</a></li>
+                <li><a href="#endpoints">Endpoints</a></li>
+                <li><a href="#examples">Examples</a></li>
+                <li><a href="#errors">Error Handling</a></li>
+            </ul>
+        </div>
+    </nav>
+    
+    <div class="container">
+        <main>
+            <aside class="sidebar">
+                <h3>Quick Links</h3>
+                <ul>
+                    <li><a href="#auth-endpoints">Authentication</a></li>
+                    <li><a href="#ai-endpoints">AI Assistant</a></li>
+                    <li><a href="#marketing-endpoints">Marketing</a></li>
+                    <li><a href="#profile-endpoints">Profile</a></li>
+                    <li><a href="#analytics-endpoints">Analytics</a></li>
+                </ul>
+            </aside>
+            
+            <section class="content">
+                <div id="introduction" class="endpoint">
+                    <h2>Introduction</h2>
+                    <p class="description">
+                        Welcome to the Not a Label API. This RESTful API provides programmatic access to all features
+                        of the Not a Label platform, including AI-powered marketing tools, artist profiles, and analytics.
+                    </p>
+                    
+                    <h3>Base URL</h3>
+                    <div class="endpoint-url">https://not-a-label.art/api</div>
+                    
+                    <h3>Request Format</h3>
+                    <p>All requests must include the following headers:</p>
+                    <pre><code class="language-bash">Content-Type: application/json
+Authorization: Bearer YOUR_JWT_TOKEN</code></pre>
+                </div>
+                
+                <div id="authentication" class="endpoint">
+                    <h2>Authentication</h2>
+                    <p class="description">
+                        Not a Label uses JWT (JSON Web Tokens) for authentication. You must include your token
+                        in the Authorization header for all protected endpoints.
+                    </p>
+                    
+                    <div id="auth-endpoints">
+                        <div class="endpoint">
+                            <h2>
+                                <span class="method post">POST</span>
+                                Register User
+                            </h2>
+                            <div class="endpoint-url">/auth/register</div>
+                            <p class="description">Create a new user account.</p>
+                            
+                            <div class="parameters">
+                                <h3>Request Body</h3>
+                                <table>
+                                    <thead>
+                                        <tr>
+                                            <th>Parameter</th>
+                                            <th>Type</th>
+                                            <th>Required</th>
+                                            <th>Description</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>email</td>
+                                            <td>string</td>
+                                            <td><span class="required">Yes</span></td>
+                                            <td>User's email address</td>
+                                        </tr>
+                                        <tr>
+                                            <td>password</td>
+                                            <td>string</td>
+                                            <td><span class="required">Yes</span></td>
+                                            <td>User's password (min 6 characters)</td>
+                                        </tr>
+                                        <tr>
+                                            <td>name</td>
+                                            <td>string</td>
+                                            <td><span class="required">Yes</span></td>
+                                            <td>User's display name</td>
+                                        </tr>
+                                        <tr>
+                                            <td>artistType</td>
+                                            <td>string</td>
+                                            <td>No</td>
+                                            <td>Type of artist (musician, producer, etc.)</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            
+                            <div class="example">
+                                <h4>Example Request</h4>
+                                <pre><code class="language-bash">curl -X POST https://not-a-label.art/api/auth/register \
+  -H "Content-Type: application/json" \
+  -d '{
+    "email": "artist@example.com",
+    "password": "securepassword",
+    "name": "John Doe",
+    "artistType": "musician"
+  }'</code></pre>
+                            </div>
+                            
+                            <div class="responses">
+                                <h3>Response</h3>
+                                <p><span class="response-code success">200 OK</span> Success</p>
+                                <pre><code class="language-json">{
+  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+  "user": {
+    "id": 1,
+    "email": "artist@example.com",
+    "name": "John Doe",
+    "artistType": "musician"
+  }
+}</code></pre>
+                            </div>
+                        </div>
+                        
+                        <div class="endpoint">
+                            <h2>
+                                <span class="method post">POST</span>
+                                Login
+                            </h2>
+                            <div class="endpoint-url">/auth/login</div>
+                            <p class="description">Authenticate an existing user.</p>
+                            
+                            <div class="parameters">
+                                <h3>Request Body</h3>
+                                <table>
+                                    <thead>
+                                        <tr>
+                                            <th>Parameter</th>
+                                            <th>Type</th>
+                                            <th>Required</th>
+                                            <th>Description</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>email</td>
+                                            <td>string</td>
+                                            <td><span class="required">Yes</span></td>
+                                            <td>User's email address</td>
+                                        </tr>
+                                        <tr>
+                                            <td>password</td>
+                                            <td>string</td>
+                                            <td><span class="required">Yes</span></td>
+                                            <td>User's password</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            
+                            <div class="example">
+                                <h4>Example Request</h4>
+                                <pre><code class="language-bash">curl -X POST https://not-a-label.art/api/auth/login \
+  -H "Content-Type: application/json" \
+  -d '{
+    "email": "artist@example.com",
+    "password": "securepassword"
+  }'</code></pre>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div id="ai-endpoints" class="endpoint">
+                    <h2>AI Assistant</h2>
+                    
+                    <div class="endpoint">
+                        <h2>
+                            <span class="method post">POST</span>
+                            AI Assistant Chat
+                        </h2>
+                        <div class="endpoint-url">/ai/assistant</div>
+                        <p class="description">Chat with the AI assistant for career advice and insights.</p>
+                        
+                        <div class="parameters">
+                            <h3>Request Body</h3>
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Parameter</th>
+                                        <th>Type</th>
+                                        <th>Required</th>
+                                        <th>Description</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>message</td>
+                                        <td>string</td>
+                                        <td><span class="required">Yes</span></td>
+                                        <td>Your message to the AI assistant</td>
+                                    </tr>
+                                    <tr>
+                                        <td>context</td>
+                                        <td>object</td>
+                                        <td>No</td>
+                                        <td>Additional context for the conversation</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        
+                        <div class="example">
+                            <h4>Example Request</h4>
+                            <pre><code class="language-bash">curl -X POST https://not-a-label.art/api/ai/assistant \
+  -H "Authorization: Bearer YOUR_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "message": "How can I grow my fanbase on social media?",
+    "context": {
+      "genre": "indie rock",
+      "experience": "2 years"
+    }
+  }'</code></pre>
+                        </div>
+                        
+                        <div class="responses">
+                            <h3>Response</h3>
+                            <p><span class="response-code success">200 OK</span> Success</p>
+                            <pre><code class="language-json">{
+  "response": "Growing your indie rock fanbase on social media requires a multi-faceted approach..."
+}</code></pre>
+                        </div>
+                    </div>
+                </div>
+                
+                <div id="marketing-endpoints" class="endpoint">
+                    <h2>Marketing</h2>
+                    
+                    <div class="endpoint">
+                        <h2>
+                            <span class="method get">GET</span>
+                            Get Marketing Templates
+                        </h2>
+                        <div class="endpoint-url">/marketing/templates</div>
+                        <p class="description">Retrieve all available marketing templates.</p>
+                        
+                        <div class="example">
+                            <h4>Example Request</h4>
+                            <pre><code class="language-bash">curl -X GET https://not-a-label.art/api/marketing/templates \
+  -H "Authorization: Bearer YOUR_TOKEN"</code></pre>
+                        </div>
+                        
+                        <div class="responses">
+                            <h3>Response</h3>
+                            <p><span class="response-code success">200 OK</span> Success</p>
+                            <pre><code class="language-json">{
+  "templates": {
+    "social_media": {
+      "announcement": "🎵 Exciting news! {content} 🎵\n\n#IndependentMusic #NewMusic",
+      "promotion": "🎸 Check out {content}! 🎸\n\nLink: {link}",
+      "engagement": "What's your favorite {content}? Let us know! 👇"
+    },
+    "email": {
+      "newsletter": {
+        "subject": "News from {artist_name}: {topic}",
+        "body": "Dear Music Lover,\n\n{content}..."
+      }
+    }
+  }
+}</code></pre>
+                        </div>
+                    </div>
+                    
+                    <div class="endpoint">
+                        <h2>
+                            <span class="method post">POST</span>
+                            Generate Marketing Content
+                        </h2>
+                        <div class="endpoint-url">/marketing/templates/generate</div>
+                        <p class="description">Generate AI-powered marketing content.</p>
+                        
+                        <div class="parameters">
+                            <h3>Request Body</h3>
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Parameter</th>
+                                        <th>Type</th>
+                                        <th>Required</th>
+                                        <th>Description</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>type</td>
+                                        <td>string</td>
+                                        <td><span class="required">Yes</span></td>
+                                        <td>Type of content (social_media, email, etc.)</td>
+                                    </tr>
+                                    <tr>
+                                        <td>context</td>
+                                        <td>object</td>
+                                        <td><span class="required">Yes</span></td>
+                                        <td>Context for content generation</td>
+                                    </tr>
+                                    <tr>
+                                        <td>tone</td>
+                                        <td>string</td>
+                                        <td>No</td>
+                                        <td>Desired tone (professional, casual, excited)</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        
+                        <div class="example">
+                            <h4>Example Request</h4>
+                            <pre><code class="language-bash">curl -X POST https://not-a-label.art/api/marketing/templates/generate \
+  -H "Authorization: Bearer YOUR_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "type": "social_media",
+    "context": {
+      "artistName": "The Midnight Echoes",
+      "genre": "Synthwave",
+      "announcement": "New album release"
+    },
+    "tone": "excited"
+  }'</code></pre>
+                        </div>
+                    </div>
+                    
+                    <div class="endpoint">
+                        <h2>
+                            <span class="method post">POST</span>
+                            Create Marketing Post
+                        </h2>
+                        <div class="endpoint-url">/marketing/posts/create</div>
+                        <p class="description">Create a new marketing post.</p>
+                        
+                        <div class="parameters">
+                            <h3>Request Body</h3>
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Parameter</th>
+                                        <th>Type</th>
+                                        <th>Required</th>
+                                        <th>Description</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>type</td>
+                                        <td>string</td>
+                                        <td><span class="required">Yes</span></td>
+                                        <td>Post type (announcement, promotion, engagement)</td>
+                                    </tr>
+                                    <tr>
+                                        <td>content</td>
+                                        <td>string</td>
+                                        <td><span class="required">Yes</span></td>
+                                        <td>Post content</td>
+                                    </tr>
+                                    <tr>
+                                        <td>platform</td>
+                                        <td>string</td>
+                                        <td><span class="required">Yes</span></td>
+                                        <td>Target platform (instagram, twitter, facebook, email)</td>
+                                    </tr>
+                                    <tr>
+                                        <td>scheduledFor</td>
+                                        <td>datetime</td>
+                                        <td>No</td>
+                                        <td>Schedule post for future (ISO 8601 format)</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    
+                    <div class="endpoint">
+                        <h2>
+                            <span class="method get">GET</span>
+                            Get User's Posts
+                        </h2>
+                        <div class="endpoint-url">/marketing/posts</div>
+                        <p class="description">Retrieve all marketing posts for the authenticated user.</p>
+                        
+                        <div class="responses">
+                            <h3>Response</h3>
+                            <p><span class="response-code success">200 OK</span> Success</p>
+                            <pre><code class="language-json">{
+  "posts": [
+    {
+      "id": 1,
+      "type": "announcement",
+      "content": "🎸 Big news! Our new single drops Friday!",
+      "platform": "instagram",
+      "status": "draft",
+      "scheduled_for": "2025-05-30T12:00:00Z",
+      "created_at": "2025-05-27T18:30:03Z"
+    }
+  ]
+}</code></pre>
+                        </div>
+                    </div>
+                    
+                    <div class="endpoint">
+                        <h2>
+                            <span class="method get">GET</span>
+                            Marketing Analytics
+                        </h2>
+                        <div class="endpoint-url">/marketing/analytics</div>
+                        <p class="description">Get marketing performance analytics.</p>
+                        
+                        <div class="responses">
+                            <h3>Response</h3>
+                            <p><span class="response-code success">200 OK</span> Success</p>
+                            <pre><code class="language-json">{
+  "analytics": {
+    "posts": {
+      "total_posts": 15,
+      "published_posts": 10,
+      "draft_posts": 3,
+      "scheduled_posts": 2
+    },
+    "platforms": {
+      "twitter": 5,
+      "instagram": 6,
+      "facebook": 3,
+      "email": 1
+    },
+    "engagement": {
+      "total_reach": 15420,
+      "total_engagement": 892
+    }
+  }
+}</code></pre>
+                        </div>
+                    </div>
+                </div>
+                
+                <div id="errors" class="endpoint">
+                    <h2>Error Handling</h2>
+                    <p class="description">
+                        The API uses standard HTTP response codes to indicate success or failure.
+                        Error responses include a descriptive message.
+                    </p>
+                    
+                    <div class="responses">
+                        <h3>Common Error Codes</h3>
+                        <p><span class="response-code error">400 Bad Request</span> Invalid request parameters</p>
+                        <pre><code class="language-json">{
+  "error": "Email already exists"
+}</code></pre>
+                        
+                        <p><span class="response-code error">401 Unauthorized</span> Missing or invalid authentication</p>
+                        <pre><code class="language-json">{
+  "error": "Invalid credentials"
+}</code></pre>
+                        
+                        <p><span class="response-code error">403 Forbidden</span> Insufficient permissions</p>
+                        <pre><code class="language-json">{
+  "error": "Access denied"
+}</code></pre>
+                        
+                        <p><span class="response-code error">404 Not Found</span> Resource not found</p>
+                        <pre><code class="language-json">{
+  "error": "Post not found"
+}</code></pre>
+                        
+                        <p><span class="response-code error">500 Internal Server Error</span> Server error</p>
+                        <pre><code class="language-json">{
+  "error": "Internal server error"
+}</code></pre>
+                    </div>
+                </div>
+                
+                <div id="examples" class="endpoint">
+                    <h2>Complete Examples</h2>
+                    
+                    <div class="example">
+                        <h4>Full Marketing Workflow</h4>
+                        <pre><code class="language-bash"># 1. Register a new user
+TOKEN=$(curl -s -X POST https://not-a-label.art/api/auth/register \
+  -H "Content-Type: application/json" \
+  -d '{
+    "email": "newartist@example.com",
+    "password": "MySecurePass123",
+    "name": "Rising Star",
+    "artistType": "musician"
+  }' | jq -r '.token')
+
+# 2. Generate marketing content
+CONTENT=$(curl -s -X POST https://not-a-label.art/api/marketing/templates/generate \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "type": "social_media",
+    "context": {
+      "artistName": "Rising Star",
+      "genre": "Pop",
+      "announcement": "First single release"
+    },
+    "tone": "excited"
+  }' | jq -r '.content')
+
+# 3. Create a marketing post
+curl -X POST https://not-a-label.art/api/marketing/posts/create \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d "{
+    \"type\": \"announcement\",
+    \"content\": \"$CONTENT\",
+    \"platform\": \"instagram\",
+    \"scheduledFor\": \"2025-06-01T18:00:00Z\"
+  }"
+
+# 4. Check your posts
+curl -X GET https://not-a-label.art/api/marketing/posts \
+  -H "Authorization: Bearer $TOKEN"</code></pre>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+    
+    <footer>
+        <div class="container">
+            <p>&copy; 2025 Not a Label. API Documentation v1.0</p>
+        </div>
+    </footer>
+</body>
+</html>

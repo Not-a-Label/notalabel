@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Registration - Not a Label</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #8b5cf6;
+            text-align: center;
+        }
+        form {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        input {
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+        button {
+            background: #8b5cf6;
+            color: white;
+            padding: 12px;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        button:hover {
+            background: #7c3aed;
+        }
+        .message {
+            padding: 10px;
+            border-radius: 5px;
+            margin-top: 20px;
+            text-align: center;
+        }
+        .success {
+            background: #10b981;
+            color: white;
+        }
+        .error {
+            background: #ef4444;
+            color: white;
+        }
+        .info {
+            background: #3b82f6;
+            color: white;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Not a Label - Test Registration</h1>
+        
+        <div class="message info">
+            Backend API: http://159.89.247.208/api/auth/register
+        </div>
+
+        <form id="registrationForm">
+            <input type="text" id="username" placeholder="Username" required>
+            <input type="email" id="email" placeholder="Email" required>
+            <input type="password" id="password" placeholder="Password (min 6 chars)" required>
+            <input type="text" id="firstName" placeholder="First Name">
+            <input type="text" id="lastName" placeholder="Last Name">
+            <input type="text" id="artistName" placeholder="Artist Name">
+            <select id="genre">
+                <option value="">Select Genre</option>
+                <option value="Hip-Hop">Hip-Hop</option>
+                <option value="Pop">Pop</option>
+                <option value="Rock">Rock</option>
+                <option value="Electronic">Electronic</option>
+                <option value="R&B">R&B</option>
+                <option value="Jazz">Jazz</option>
+                <option value="Other">Other</option>
+            </select>
+            <button type="submit">Register</button>
+        </form>
+
+        <div id="message"></div>
+    </div>
+
+    <script>
+        const API_URL = 'http://159.89.247.208/api/auth/register';
+        
+        document.getElementById('registrationForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const messageDiv = document.getElementById('message');
+            messageDiv.innerHTML = '<div class="message info">Registering...</div>';
+            
+            const formData = {
+                username: document.getElementById('username').value,
+                email: document.getElementById('email').value,
+                password: document.getElementById('password').value,
+                firstName: document.getElementById('firstName').value,
+                lastName: document.getElementById('lastName').value,
+                artistName: document.getElementById('artistName').value,
+                genre: document.getElementById('genre').value
+            };
+            
+            try {
+                const response = await fetch(API_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(formData)
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok && data.success) {
+                    messageDiv.innerHTML = `
+                        <div class="message success">
+                            Registration successful! 🎉<br>
+                            User ID: ${data.user.id}<br>
+                            Username: ${data.user.username}<br>
+                            Token: ${data.token.substring(0, 20)}...
+                        </div>
+                    `;
+                    
+                    // Clear form
+                    document.getElementById('registrationForm').reset();
+                } else {
+                    messageDiv.innerHTML = `
+                        <div class="message error">
+                            Error: ${data.error || 'Registration failed'}<br>
+                            ${data.details || ''}
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                messageDiv.innerHTML = `
+                    <div class="message error">
+                        Network Error: ${error.message}<br>
+                        Make sure you're connected to the internet.
+                    </div>
+                `;
+            }
+        });
+    </script>
+</body>
+</html>

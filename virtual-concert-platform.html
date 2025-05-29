@@ -1,0 +1,953 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Not a Label - Virtual Concert Experience</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #000;
+            color: white;
+            overflow: hidden;
+        }
+        
+        /* Stage Area */
+        .concert-stage {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            background: radial-gradient(ellipse at center, #1a1a2e 0%, #0a0a0a 100%);
+        }
+        
+        /* Video Player */
+        .main-stream {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 80%;
+            max-width: 1200px;
+            height: auto;
+            aspect-ratio: 16/9;
+            background: #000;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 0 100px rgba(102, 126, 234, 0.5);
+        }
+        
+        #streamVideo {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        /* Stage Lights */
+        .stage-lights {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
+        
+        .light {
+            position: absolute;
+            width: 300px;
+            height: 600px;
+            background: linear-gradient(to bottom, transparent, rgba(255, 255, 255, 0.1));
+            transform-origin: top center;
+            animation: sway 8s ease-in-out infinite;
+        }
+        
+        .light:nth-child(1) {
+            left: 10%;
+            top: -200px;
+            transform: rotate(20deg);
+            background: linear-gradient(to bottom, transparent, rgba(255, 100, 100, 0.2));
+            animation-delay: 0s;
+        }
+        
+        .light:nth-child(2) {
+            left: 30%;
+            top: -200px;
+            transform: rotate(-10deg);
+            background: linear-gradient(to bottom, transparent, rgba(100, 255, 100, 0.2));
+            animation-delay: 2s;
+        }
+        
+        .light:nth-child(3) {
+            right: 30%;
+            top: -200px;
+            transform: rotate(10deg);
+            background: linear-gradient(to bottom, transparent, rgba(100, 100, 255, 0.2));
+            animation-delay: 4s;
+        }
+        
+        .light:nth-child(4) {
+            right: 10%;
+            top: -200px;
+            transform: rotate(-20deg);
+            background: linear-gradient(to bottom, transparent, rgba(255, 255, 100, 0.2));
+            animation-delay: 6s;
+        }
+        
+        @keyframes sway {
+            0%, 100% { transform: rotate(var(--rotation)) scale(1); }
+            50% { transform: rotate(calc(var(--rotation) * -1)) scale(1.1); }
+        }
+        
+        /* Concert UI Overlay */
+        .concert-ui {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 10;
+        }
+        
+        .concert-ui > * {
+            pointer-events: auto;
+        }
+        
+        /* Top Bar */
+        .top-bar {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            padding: 20px 30px;
+            background: linear-gradient(to bottom, rgba(0, 0, 0, 0.8), transparent);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .artist-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .artist-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 1.2em;
+        }
+        
+        .artist-details h1 {
+            font-size: 1.5em;
+            margin-bottom: 5px;
+        }
+        
+        .live-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            background: #ff0000;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.8em;
+            font-weight: 600;
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+        
+        .viewer-count {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 8px 16px;
+            border-radius: 25px;
+            backdrop-filter: blur(10px);
+        }
+        
+        /* Chat Sidebar */
+        .chat-sidebar {
+            position: absolute;
+            right: 0;
+            top: 0;
+            width: 350px;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(20px);
+            display: flex;
+            flex-direction: column;
+            transform: translateX(100%);
+            transition: transform 0.3s ease;
+        }
+        
+        .chat-sidebar.open {
+            transform: translateX(0);
+        }
+        
+        .chat-header {
+            padding: 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+        }
+        
+        .message {
+            margin-bottom: 15px;
+            animation: slideIn 0.3s ease;
+        }
+        
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+        
+        .message-author {
+            font-weight: 600;
+            color: #667eea;
+            margin-bottom: 5px;
+        }
+        
+        .message-text {
+            color: rgba(255, 255, 255, 0.9);
+            line-height: 1.4;
+        }
+        
+        .super-chat {
+            background: linear-gradient(135deg, #ffd700, #ff8c00);
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            box-shadow: 0 5px 20px rgba(255, 215, 0, 0.3);
+        }
+        
+        .super-chat .amount {
+            font-size: 1.2em;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+        
+        .chat-input {
+            padding: 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .chat-input-field {
+            width: 100%;
+            padding: 12px 16px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 25px;
+            color: white;
+            font-size: 1em;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+        
+        .chat-input-field:focus {
+            background: rgba(255, 255, 255, 0.15);
+            border-color: #667eea;
+        }
+        
+        /* Bottom Controls */
+        .bottom-controls {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: 30px;
+            background: linear-gradient(to top, rgba(0, 0, 0, 0.9), transparent);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 20px;
+        }
+        
+        .control-btn {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: white;
+            padding: 15px 20px;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 600;
+        }
+        
+        .control-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+        }
+        
+        .control-btn.primary {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border: none;
+        }
+        
+        .control-btn.active {
+            background: #667eea;
+        }
+        
+        /* Reaction Animations */
+        .reactions-container {
+            position: absolute;
+            bottom: 100px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 300px;
+            height: 400px;
+            pointer-events: none;
+        }
+        
+        .reaction {
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            font-size: 2em;
+            animation: floatUp 4s ease-out forwards;
+        }
+        
+        @keyframes floatUp {
+            0% {
+                transform: translateX(-50%) translateY(0) scale(0);
+                opacity: 0;
+            }
+            10% {
+                transform: translateX(-50%) translateY(-20px) scale(1);
+                opacity: 1;
+            }
+            100% {
+                transform: translateX(calc(-50% + var(--drift))) translateY(-400px) scale(0.5);
+                opacity: 0;
+            }
+        }
+        
+        /* Virtual Audience */
+        .virtual-audience {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 150px;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            padding: 20px;
+            overflow-x: auto;
+            overflow-y: hidden;
+        }
+        
+        .audience-member {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            flex-shrink: 0;
+            position: relative;
+            animation: bounce 2s ease-in-out infinite;
+            animation-delay: calc(var(--index) * 0.1s);
+        }
+        
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+        
+        .audience-member.vip {
+            background: linear-gradient(135deg, #ffd700, #ff8c00);
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
+        }
+        
+        /* Tip Modal */
+        .tip-modal {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0.9);
+            background: rgba(20, 20, 30, 0.95);
+            backdrop-filter: blur(20px);
+            padding: 40px;
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8);
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+            z-index: 100;
+        }
+        
+        .tip-modal.open {
+            opacity: 1;
+            visibility: visible;
+            transform: translate(-50%, -50%) scale(1);
+        }
+        
+        .tip-modal h2 {
+            font-size: 1.8em;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        .tip-amounts {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+        
+        .tip-amount {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 20px;
+            border-radius: 15px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .tip-amount:hover {
+            background: rgba(102, 126, 234, 0.3);
+            border-color: #667eea;
+            transform: translateY(-2px);
+        }
+        
+        .tip-amount.selected {
+            background: #667eea;
+            border-color: #667eea;
+        }
+        
+        .tip-amount .amount {
+            font-size: 1.5em;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+        
+        .custom-tip {
+            width: 100%;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            color: white;
+            font-size: 1.1em;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        
+        .tip-message {
+            width: 100%;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            color: white;
+            font-size: 1em;
+            margin-bottom: 20px;
+            resize: vertical;
+            min-height: 80px;
+        }
+        
+        .tip-actions {
+            display: flex;
+            gap: 15px;
+        }
+        
+        .tip-btn {
+            flex: 1;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .tip-btn.primary {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+        }
+        
+        .tip-btn.secondary {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        /* Mobile Responsive */
+        @media (max-width: 768px) {
+            .main-stream {
+                width: 95%;
+                top: 40%;
+            }
+            
+            .chat-sidebar {
+                width: 100%;
+            }
+            
+            .virtual-audience {
+                height: 100px;
+            }
+            
+            .audience-member {
+                width: 40px;
+                height: 40px;
+                font-size: 0.8em;
+            }
+            
+            .bottom-controls {
+                padding: 20px;
+                gap: 10px;
+            }
+            
+            .control-btn {
+                padding: 12px 16px;
+                font-size: 0.9em;
+            }
+            
+            .tip-amounts {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+        
+        /* Stage Effects */
+        .pyro {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            overflow: hidden;
+        }
+        
+        .firework {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: white;
+            border-radius: 50%;
+            bottom: 0;
+            animation: firework 2s ease-out forwards;
+        }
+        
+        @keyframes firework {
+            0% {
+                transform: translateY(0) translateX(0);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-600px) translateX(var(--x-offset));
+                opacity: 0;
+            }
+        }
+        
+        .firework::after {
+            content: '';
+            position: absolute;
+            width: 100px;
+            height: 100px;
+            background: radial-gradient(circle, var(--color) 0%, transparent 70%);
+            border-radius: 50%;
+            top: -50px;
+            left: -50px;
+            opacity: 0;
+            animation: explode 0.5s ease-out 1.5s forwards;
+        }
+        
+        @keyframes explode {
+            0% {
+                transform: scale(0);
+                opacity: 1;
+            }
+            100% {
+                transform: scale(3);
+                opacity: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="concert-stage">
+        <!-- Stage Lighting Effects -->
+        <div class="stage-lights">
+            <div class="light" style="--rotation: 20deg;"></div>
+            <div class="light" style="--rotation: -10deg;"></div>
+            <div class="light" style="--rotation: 10deg;"></div>
+            <div class="light" style="--rotation: -20deg;"></div>
+        </div>
+        
+        <!-- Main Video Stream -->
+        <div class="main-stream">
+            <video id="streamVideo" autoplay muted playsinline>
+                <source src="stream.mp4" type="video/mp4">
+            </video>
+        </div>
+        
+        <!-- Concert UI Overlay -->
+        <div class="concert-ui">
+            <!-- Top Bar -->
+            <div class="top-bar">
+                <div class="artist-info">
+                    <div class="artist-avatar">JD</div>
+                    <div class="artist-details">
+                        <h1>Jamie Davis</h1>
+                        <div class="live-badge">
+                            <span style="font-size: 0.8em;">●</span> LIVE
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="viewer-count">
+                    <span style="font-size: 1.2em;">👁️</span>
+                    <span id="viewerCount">1,234</span> watching
+                </div>
+            </div>
+            
+            <!-- Chat Sidebar -->
+            <div class="chat-sidebar" id="chatSidebar">
+                <div class="chat-header">
+                    <h3>Live Chat</h3>
+                    <button onclick="toggleChat()" style="background: none; border: none; color: white; font-size: 1.5em; cursor: pointer;">×</button>
+                </div>
+                
+                <div class="chat-messages" id="chatMessages">
+                    <div class="super-chat">
+                        <div class="amount">$50.00</div>
+                        <div class="message-author">SuperFan123</div>
+                        <div class="message-text">Amazing performance! Keep rocking! 🎸</div>
+                    </div>
+                    
+                    <div class="message">
+                        <div class="message-author">MusicLover22</div>
+                        <div class="message-text">This is incredible! 🔥</div>
+                    </div>
+                    
+                    <div class="message">
+                        <div class="message-author">ConcertGoer99</div>
+                        <div class="message-text">Best virtual concert ever!</div>
+                    </div>
+                </div>
+                
+                <div class="chat-input">
+                    <input type="text" class="chat-input-field" placeholder="Say something..." id="chatInput" onkeypress="handleChatInput(event)">
+                </div>
+            </div>
+            
+            <!-- Bottom Controls -->
+            <div class="bottom-controls">
+                <button class="control-btn" onclick="sendReaction('❤️')">
+                    <span style="font-size: 1.2em;">❤️</span>
+                    <span>Love</span>
+                </button>
+                
+                <button class="control-btn" onclick="sendReaction('🔥')">
+                    <span style="font-size: 1.2em;">🔥</span>
+                    <span>Fire</span>
+                </button>
+                
+                <button class="control-btn" onclick="sendReaction('🎸')">
+                    <span style="font-size: 1.2em;">🎸</span>
+                    <span>Rock On</span>
+                </button>
+                
+                <button class="control-btn primary" onclick="openTipModal()">
+                    <span style="font-size: 1.2em;">💰</span>
+                    <span>Send Tip</span>
+                </button>
+                
+                <button class="control-btn" onclick="toggleChat()">
+                    <span style="font-size: 1.2em;">💬</span>
+                    <span>Chat</span>
+                </button>
+                
+                <button class="control-btn" onclick="toggleFullscreen()">
+                    <span style="font-size: 1.2em;">⛶</span>
+                    <span>Fullscreen</span>
+                </button>
+            </div>
+        </div>
+        
+        <!-- Reactions Container -->
+        <div class="reactions-container" id="reactionsContainer"></div>
+        
+        <!-- Virtual Audience -->
+        <div class="virtual-audience" id="virtualAudience">
+            <!-- Audience members will be dynamically added -->
+        </div>
+        
+        <!-- Pyro Effects -->
+        <div class="pyro" id="pyroEffects"></div>
+    </div>
+    
+    <!-- Tip Modal -->
+    <div class="tip-modal" id="tipModal">
+        <h2>Support the Artist 💖</h2>
+        
+        <div class="tip-amounts">
+            <div class="tip-amount" onclick="selectTipAmount(5)">
+                <div class="amount">$5</div>
+                <div>Coffee</div>
+            </div>
+            <div class="tip-amount" onclick="selectTipAmount(10)">
+                <div class="amount">$10</div>
+                <div>Lunch</div>
+            </div>
+            <div class="tip-amount" onclick="selectTipAmount(25)">
+                <div class="amount">$25</div>
+                <div>Pizza</div>
+            </div>
+            <div class="tip-amount" onclick="selectTipAmount(50)">
+                <div class="amount">$50</div>
+                <div>Dinner</div>
+            </div>
+            <div class="tip-amount" onclick="selectTipAmount(100)">
+                <div class="amount">$100</div>
+                <div>VIP</div>
+            </div>
+            <div class="tip-amount" onclick="focusCustomAmount()">
+                <div class="amount">?</div>
+                <div>Custom</div>
+            </div>
+        </div>
+        
+        <input type="number" class="custom-tip" id="customTipAmount" placeholder="Enter custom amount" style="display: none;">
+        
+        <textarea class="tip-message" id="tipMessage" placeholder="Add a message (optional)"></textarea>
+        
+        <div class="tip-actions">
+            <button class="tip-btn secondary" onclick="closeTipModal()">Cancel</button>
+            <button class="tip-btn primary" onclick="sendTip()">Send Tip</button>
+        </div>
+    </div>
+    
+    <script>
+        let selectedTipAmount = 0;
+        let viewerCount = 1234;
+        let chatOpen = false;
+        
+        // Initialize virtual audience
+        function initializeAudience() {
+            const audience = document.getElementById('virtualAudience');
+            const names = ['AB', 'CD', 'EF', 'GH', 'IJ', 'KL', 'MN', 'OP', 'QR', 'ST'];
+            
+            for (let i = 0; i < 20; i++) {
+                const member = document.createElement('div');
+                member.className = i < 3 ? 'audience-member vip' : 'audience-member';
+                member.style.setProperty('--index', i);
+                member.textContent = names[i % names.length];
+                audience.appendChild(member);
+            }
+        }
+        
+        // Send reaction
+        function sendReaction(emoji) {
+            const container = document.getElementById('reactionsContainer');
+            const reaction = document.createElement('div');
+            reaction.className = 'reaction';
+            reaction.textContent = emoji;
+            reaction.style.setProperty('--drift', `${(Math.random() - 0.5) * 100}px`);
+            
+            container.appendChild(reaction);
+            
+            // Remove after animation
+            setTimeout(() => reaction.remove(), 4000);
+            
+            // Trigger pyro for special reactions
+            if (emoji === '🔥') {
+                triggerPyro();
+            }
+        }
+        
+        // Trigger pyrotechnics
+        function triggerPyro() {
+            const pyro = document.getElementById('pyroEffects');
+            const colors = ['#ff6b6b', '#4ecdc4', '#45b7d1', '#f9ca24', '#f093fb'];
+            
+            for (let i = 0; i < 10; i++) {
+                setTimeout(() => {
+                    const firework = document.createElement('div');
+                    firework.className = 'firework';
+                    firework.style.left = Math.random() * 100 + '%';
+                    firework.style.setProperty('--x-offset', `${(Math.random() - 0.5) * 200}px`);
+                    firework.style.setProperty('--color', colors[Math.floor(Math.random() * colors.length)]);
+                    
+                    pyro.appendChild(firework);
+                    
+                    setTimeout(() => firework.remove(), 2000);
+                }, i * 100);
+            }
+        }
+        
+        // Toggle chat
+        function toggleChat() {
+            const sidebar = document.getElementById('chatSidebar');
+            chatOpen = !chatOpen;
+            sidebar.classList.toggle('open', chatOpen);
+        }
+        
+        // Handle chat input
+        function handleChatInput(event) {
+            if (event.key === 'Enter' && event.target.value.trim()) {
+                const messages = document.getElementById('chatMessages');
+                const message = document.createElement('div');
+                message.className = 'message';
+                message.innerHTML = `
+                    <div class="message-author">You</div>
+                    <div class="message-text">${event.target.value}</div>
+                `;
+                
+                messages.appendChild(message);
+                messages.scrollTop = messages.scrollHeight;
+                event.target.value = '';
+            }
+        }
+        
+        // Tip modal functions
+        function openTipModal() {
+            document.getElementById('tipModal').classList.add('open');
+        }
+        
+        function closeTipModal() {
+            document.getElementById('tipModal').classList.remove('open');
+            selectedTipAmount = 0;
+            document.querySelectorAll('.tip-amount').forEach(el => el.classList.remove('selected'));
+            document.getElementById('customTipAmount').style.display = 'none';
+        }
+        
+        function selectTipAmount(amount) {
+            selectedTipAmount = amount;
+            document.querySelectorAll('.tip-amount').forEach(el => el.classList.remove('selected'));
+            event.currentTarget.classList.add('selected');
+            document.getElementById('customTipAmount').style.display = 'none';
+        }
+        
+        function focusCustomAmount() {
+            document.querySelectorAll('.tip-amount').forEach(el => el.classList.remove('selected'));
+            event.currentTarget.classList.add('selected');
+            const customInput = document.getElementById('customTipAmount');
+            customInput.style.display = 'block';
+            customInput.focus();
+        }
+        
+        function sendTip() {
+            const customAmount = document.getElementById('customTipAmount').value;
+            const amount = customAmount || selectedTipAmount;
+            const message = document.getElementById('tipMessage').value;
+            
+            if (amount > 0) {
+                // Show super chat
+                const messages = document.getElementById('chatMessages');
+                const superChat = document.createElement('div');
+                superChat.className = 'super-chat';
+                superChat.innerHTML = `
+                    <div class="amount">$${amount}.00</div>
+                    <div class="message-author">You</div>
+                    <div class="message-text">${message || 'Thanks for the amazing show!'}</div>
+                `;
+                
+                messages.appendChild(superChat);
+                messages.scrollTop = messages.scrollHeight;
+                
+                // Trigger celebration
+                triggerPyro();
+                sendReaction('💖');
+                
+                closeTipModal();
+            }
+        }
+        
+        // Toggle fullscreen
+        function toggleFullscreen() {
+            if (!document.fullscreenElement) {
+                document.documentElement.requestFullscreen();
+            } else {
+                document.exitFullscreen();
+            }
+        }
+        
+        // Update viewer count
+        function updateViewerCount() {
+            viewerCount += Math.floor(Math.random() * 10) - 3;
+            viewerCount = Math.max(100, viewerCount);
+            document.getElementById('viewerCount').textContent = viewerCount.toLocaleString();
+        }
+        
+        // Simulate incoming messages
+        function simulateChat() {
+            const messages = [
+                { author: 'FanClub2025', text: 'Love this song!' },
+                { author: 'MusicAddict', text: 'The lighting is amazing 🌟' },
+                { author: 'BeatDropper', text: 'When is the next show?' },
+                { author: 'VinylCollector', text: 'Playing this on repeat!' },
+                { author: 'LiveMusicFan', text: 'Better than in-person!' }
+            ];
+            
+            const randomMessage = messages[Math.floor(Math.random() * messages.length)];
+            const chatMessages = document.getElementById('chatMessages');
+            
+            const message = document.createElement('div');
+            message.className = 'message';
+            message.innerHTML = `
+                <div class="message-author">${randomMessage.author}</div>
+                <div class="message-text">${randomMessage.text}</div>
+            `;
+            
+            chatMessages.appendChild(message);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+        
+        // Initialize
+        initializeAudience();
+        setInterval(updateViewerCount, 5000);
+        setInterval(simulateChat, 8000);
+        
+        // Simulate random reactions
+        setInterval(() => {
+            const reactions = ['❤️', '🔥', '🎸', '🎵', '👏'];
+            const randomReaction = reactions[Math.floor(Math.random() * reactions.length)];
+            if (Math.random() > 0.7) {
+                sendReaction(randomReaction);
+            }
+        }, 3000);
+        
+        // Auto-open chat on desktop
+        if (window.innerWidth > 768) {
+            setTimeout(() => toggleChat(), 1000);
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Not a Label - Two-Factor Authentication Setup</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        
+        .setup-container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            max-width: 500px;
+            width: 100%;
+            padding: 40px;
+        }
+        
+        .setup-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        
+        .security-icon {
+            font-size: 4em;
+            margin-bottom: 20px;
+        }
+        
+        h1 {
+            font-size: 2em;
+            color: #333;
+            margin-bottom: 10px;
+        }
+        
+        .subtitle {
+            color: #666;
+            line-height: 1.6;
+        }
+        
+        .setup-steps {
+            margin-bottom: 30px;
+        }
+        
+        .step {
+            margin-bottom: 30px;
+            opacity: 0.5;
+            transition: opacity 0.3s ease;
+        }
+        
+        .step.active {
+            opacity: 1;
+        }
+        
+        .step-number {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 30px;
+            height: 30px;
+            background: #667eea;
+            color: white;
+            border-radius: 50%;
+            font-weight: 600;
+            margin-right: 15px;
+        }
+        
+        .step-content {
+            display: inline-block;
+            vertical-align: middle;
+        }
+        
+        .qr-section {
+            text-align: center;
+            margin: 30px 0;
+            padding: 30px;
+            background: #f8f9fa;
+            border-radius: 15px;
+        }
+        
+        .qr-code {
+            width: 200px;
+            height: 200px;
+            margin: 20px auto;
+            background: white;
+            padding: 10px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .secret-key {
+            background: #e9ecef;
+            padding: 15px;
+            border-radius: 10px;
+            font-family: 'Courier New', monospace;
+            font-size: 1.1em;
+            word-break: break-all;
+            margin: 20px 0;
+            color: #495057;
+        }
+        
+        .copy-btn {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.9em;
+            transition: all 0.3s ease;
+        }
+        
+        .copy-btn:hover {
+            background: #5a67d8;
+            transform: translateY(-1px);
+        }
+        
+        .verification-section {
+            margin-top: 30px;
+        }
+        
+        .input-group {
+            margin-bottom: 20px;
+        }
+        
+        .input-label {
+            display: block;
+            margin-bottom: 8px;
+            color: #495057;
+            font-weight: 600;
+        }
+        
+        .verification-input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e9ecef;
+            border-radius: 10px;
+            font-size: 1.1em;
+            text-align: center;
+            letter-spacing: 0.5em;
+            font-weight: 600;
+        }
+        
+        .verification-input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        .backup-codes {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+        
+        .backup-codes-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 15px;
+            color: #856404;
+        }
+        
+        .backup-codes-list {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin-top: 15px;
+        }
+        
+        .backup-code {
+            background: white;
+            padding: 8px;
+            border-radius: 6px;
+            font-family: 'Courier New', monospace;
+            text-align: center;
+            font-weight: 600;
+            color: #495057;
+        }
+        
+        .action-buttons {
+            display: flex;
+            gap: 15px;
+            margin-top: 30px;
+        }
+        
+        .btn {
+            flex: 1;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+        }
+        
+        .btn-secondary {
+            background: #e9ecef;
+            color: #495057;
+        }
+        
+        .btn-secondary:hover {
+            background: #dee2e6;
+        }
+        
+        .success-message {
+            background: #d4edda;
+            color: #155724;
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+            margin-bottom: 20px;
+            display: none;
+        }
+        
+        .app-suggestions {
+            margin-top: 20px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 10px;
+        }
+        
+        .app-list {
+            display: flex;
+            gap: 20px;
+            margin-top: 15px;
+            justify-content: center;
+        }
+        
+        .app-item {
+            text-align: center;
+            text-decoration: none;
+            color: #495057;
+            transition: all 0.3s ease;
+        }
+        
+        .app-item:hover {
+            transform: translateY(-2px);
+            color: #667eea;
+        }
+        
+        .app-icon {
+            font-size: 2.5em;
+            margin-bottom: 5px;
+        }
+        
+        .app-name {
+            font-size: 0.9em;
+        }
+    </style>
+</head>
+<body>
+    <div class="setup-container">
+        <div class="setup-header">
+            <div class="security-icon">🔐</div>
+            <h1>Enable Two-Factor Authentication</h1>
+            <p class="subtitle">Add an extra layer of security to your Not a Label account</p>
+        </div>
+        
+        <div class="setup-steps">
+            <div class="step active">
+                <span class="step-number">1</span>
+                <span class="step-content">Install an authenticator app</span>
+            </div>
+            <div class="step active">
+                <span class="step-number">2</span>
+                <span class="step-content">Scan QR code or enter key</span>
+            </div>
+            <div class="step">
+                <span class="step-number">3</span>
+                <span class="step-content">Verify with a code</span>
+            </div>
+        </div>
+        
+        <div class="qr-section">
+            <h3>Scan this QR code with your authenticator app</h3>
+            <div class="qr-code">
+                <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg==" 
+                     alt="QR Code" style="width: 100%; height: 100%;">
+            </div>
+            
+            <p style="margin: 20px 0;">Or enter this key manually:</p>
+            <div class="secret-key">
+                JBSWY3DPEHPK3PXP
+                <button class="copy-btn" onclick="copySecret()">📋 Copy</button>
+            </div>
+        </div>
+        
+        <div class="app-suggestions">
+            <p style="text-align: center; color: #666;">Recommended authenticator apps:</p>
+            <div class="app-list">
+                <a href="#" class="app-item">
+                    <div class="app-icon">📱</div>
+                    <div class="app-name">Google<br>Authenticator</div>
+                </a>
+                <a href="#" class="app-item">
+                    <div class="app-icon">🔑</div>
+                    <div class="app-name">Microsoft<br>Authenticator</div>
+                </a>
+                <a href="#" class="app-item">
+                    <div class="app-icon">🛡️</div>
+                    <div class="app-name">Authy</div>
+                </a>
+            </div>
+        </div>
+        
+        <div class="verification-section">
+            <div class="input-group">
+                <label class="input-label">Enter the 6-digit code from your app:</label>
+                <input type="text" 
+                       class="verification-input" 
+                       maxlength="6" 
+                       pattern="[0-9]*" 
+                       inputmode="numeric"
+                       placeholder="000000"
+                       id="verificationCode">
+            </div>
+        </div>
+        
+        <div class="success-message" id="successMessage">
+            ✅ Two-factor authentication has been successfully enabled!
+        </div>
+        
+        <div class="backup-codes" id="backupCodes" style="display: none;">
+            <div class="backup-codes-header">
+                <span style="font-size: 1.5em;">⚠️</span>
+                <strong>Save your backup codes!</strong>
+            </div>
+            <p style="font-size: 0.9em; margin-bottom: 10px;">
+                Store these codes in a safe place. You can use them to access your account if you lose your authenticator device.
+            </p>
+            <div class="backup-codes-list">
+                <div class="backup-code">A3K9-2LP5</div>
+                <div class="backup-code">B7M2-4QR8</div>
+                <div class="backup-code">C5N1-6WT3</div>
+                <div class="backup-code">D9X4-8YU7</div>
+                <div class="backup-code">E2V6-1ZA9</div>
+                <div class="backup-code">F4S8-3BC2</div>
+                <div class="backup-code">G7H1-5DE4</div>
+                <div class="backup-code">J3K6-7FG8</div>
+            </div>
+        </div>
+        
+        <div class="action-buttons">
+            <button class="btn btn-secondary" onclick="cancel()">Cancel</button>
+            <button class="btn btn-primary" onclick="verify()">Verify & Enable</button>
+        </div>
+    </div>
+    
+    <script>
+        function copySecret() {
+            const secret = 'JBSWY3DPEHPK3PXP';
+            navigator.clipboard.writeText(secret).then(() => {
+                const btn = event.target;
+                const originalText = btn.textContent;
+                btn.textContent = '✓ Copied!';
+                setTimeout(() => {
+                    btn.textContent = originalText;
+                }, 2000);
+            });
+        }
+        
+        function verify() {
+            const code = document.getElementById('verificationCode').value;
+            
+            if (code.length !== 6) {
+                alert('Please enter a 6-digit code');
+                return;
+            }
+            
+            // Simulate verification
+            setTimeout(() => {
+                // Mark step 3 as active
+                document.querySelectorAll('.step')[2].classList.add('active');
+                
+                // Show success message
+                document.getElementById('successMessage').style.display = 'block';
+                
+                // Show backup codes
+                document.getElementById('backupCodes').style.display = 'block';
+                
+                // Scroll to backup codes
+                document.getElementById('backupCodes').scrollIntoView({ behavior: 'smooth' });
+                
+                // Change button text
+                document.querySelector('.btn-primary').textContent = '✓ Enabled';
+                document.querySelector('.btn-primary').disabled = true;
+            }, 1000);
+        }
+        
+        function cancel() {
+            if (confirm('Are you sure you want to cancel two-factor authentication setup?')) {
+                window.location.href = '/settings';
+            }
+        }
+        
+        // Auto-format verification code input
+        document.getElementById('verificationCode').addEventListener('input', function(e) {
+            this.value = this.value.replace(/[^0-9]/g, '');
+        });
+    </script>
+</body>
+</html>

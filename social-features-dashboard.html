@@ -1,0 +1,549 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Enhanced Social Features - Not a Label</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 3rem;
+        }
+
+        .header h1 {
+            font-size: 3rem;
+            margin-bottom: 0.5rem;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .feature-card {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            padding: 2rem;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .feature-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .feature-icon {
+            font-size: 2rem;
+            margin-right: 1rem;
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            border-radius: 12px;
+            color: white;
+        }
+
+        .feature-card h3 {
+            font-size: 1.5rem;
+            color: #2d3748;
+        }
+
+        .feature-list {
+            list-style: none;
+            margin-bottom: 1.5rem;
+        }
+
+        .feature-list li {
+            padding: 0.5rem 0;
+            padding-left: 1.5rem;
+            position: relative;
+            color: #4a5568;
+        }
+
+        .feature-list li:before {
+            content: '✨';
+            position: absolute;
+            left: 0;
+        }
+
+        .api-section {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            padding: 2rem;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+            margin-bottom: 2rem;
+        }
+
+        .api-section h3 {
+            font-size: 1.8rem;
+            margin-bottom: 1rem;
+            color: #2d3748;
+        }
+
+        .api-endpoints {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1rem;
+        }
+
+        .endpoint {
+            background: #f7fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 1rem;
+        }
+
+        .endpoint-method {
+            display: inline-block;
+            background: #667eea;
+            color: white;
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+        }
+
+        .endpoint-method.post { background: #48bb78; }
+        .endpoint-method.get { background: #4299e1; }
+        .endpoint-method.put { background: #ed8936; }
+        .endpoint-method.delete { background: #f56565; }
+
+        .endpoint-path {
+            font-family: 'Monaco', 'Menlo', monospace;
+            font-size: 0.9rem;
+            color: #2d3748;
+            margin-bottom: 0.5rem;
+        }
+
+        .endpoint-desc {
+            font-size: 0.85rem;
+            color: #718096;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+
+        .stat-card {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 1.5rem;
+            text-align: center;
+            color: white;
+            backdrop-filter: blur(10px);
+        }
+
+        .stat-number {
+            font-size: 2rem;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+
+        .demo-section {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            padding: 2rem;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+            margin-bottom: 2rem;
+        }
+
+        .demo-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .demo-btn {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .demo-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+        }
+
+        .demo-output {
+            background: #1a202c;
+            color: #68d391;
+            border-radius: 8px;
+            padding: 1rem;
+            margin-top: 1rem;
+            font-family: 'Monaco', 'Menlo', monospace;
+            font-size: 0.9rem;
+            max-height: 300px;
+            overflow-y: auto;
+            display: none;
+        }
+
+        @media (max-width: 768px) {
+            .features-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .api-endpoints {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🚀 Enhanced Social Features</h1>
+            <p>Complete social ecosystem for independent artists</p>
+        </div>
+
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="feature-header">
+                    <div class="feature-icon">🤝</div>
+                    <h3>Artist Collaboration Network</h3>
+                </div>
+                <ul class="feature-list">
+                    <li>Advanced matching algorithm with 8 compatibility factors</li>
+                    <li>Skill-based partner recommendations</li>
+                    <li>Project management and tracking</li>
+                    <li>Artist groups and communities</li>
+                    <li>Reputation and achievement system</li>
+                    <li>Real-time collaboration invitations</li>
+                </ul>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-header">
+                    <div class="feature-icon">🎪</div>
+                    <h3>Fan Club Management</h3>
+                </div>
+                <ul class="feature-list">
+                    <li>Multi-tier subscription system (Basic, Premium, VIP)</li>
+                    <li>Exclusive content and early access</li>
+                    <li>Live events and video calls</li>
+                    <li>Personal messages and perks</li>
+                    <li>Revenue analytics and growth tracking</li>
+                    <li>Member engagement scoring</li>
+                </ul>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-header">
+                    <div class="feature-icon">📱</div>
+                    <h3>Social Media Scheduler</h3>
+                </div>
+                <ul class="feature-list">
+                    <li>Multi-platform posting (Twitter, Instagram, Facebook, TikTok)</li>
+                    <li>Campaign management and templates</li>
+                    <li>Content scheduling and automation</li>
+                    <li>Performance analytics and insights</li>
+                    <li>Hashtag optimization</li>
+                    <li>Cross-platform content adaptation</li>
+                </ul>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-header">
+                    <div class="feature-icon">💫</div>
+                    <h3>Influencer Partnerships</h3>
+                </div>
+                <ul class="feature-list">
+                    <li>Influencer discovery with detailed profiles</li>
+                    <li>Partnership proposal and contract management</li>
+                    <li>Performance tracking and deliverable approval</li>
+                    <li>Automated payment processing</li>
+                    <li>ROI analytics and campaign insights</li>
+                    <li>Media kit and rate card integration</li>
+                </ul>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-header">
+                    <div class="feature-icon">🏆</div>
+                    <h3>Community Challenges</h3>
+                </div>
+                <ul class="feature-list">
+                    <li>Cover song and remix contests</li>
+                    <li>Music video and lyrics challenges</li>
+                    <li>Community voting and judging</li>
+                    <li>Prize distribution and rewards</li>
+                    <li>Participant analytics and demographics</li>
+                    <li>Challenge templates and automation</li>
+                </ul>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-header">
+                    <div class="feature-icon">📊</div>
+                    <h3>Unified Dashboard</h3>
+                </div>
+                <ul class="feature-list">
+                    <li>Cross-feature analytics integration</li>
+                    <li>Real-time performance metrics</li>
+                    <li>Automated recommendations</li>
+                    <li>Event-driven feature interactions</li>
+                    <li>Comprehensive reporting</li>
+                    <li>Growth optimization insights</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="api-section">
+            <h3>🔗 API Endpoints</h3>
+            <div class="api-endpoints">
+                <div class="endpoint">
+                    <div class="endpoint-method post">POST</div>
+                    <div class="endpoint-path">/api/social/collaboration/profile</div>
+                    <div class="endpoint-desc">Create artist collaboration profile</div>
+                </div>
+
+                <div class="endpoint">
+                    <div class="endpoint-method get">GET</div>
+                    <div class="endpoint-path">/api/social/collaboration/find-partners/:artistId</div>
+                    <div class="endpoint-desc">Find collaboration partners</div>
+                </div>
+
+                <div class="endpoint">
+                    <div class="endpoint-method post">POST</div>
+                    <div class="endpoint-path">/api/social/fanclub/create</div>
+                    <div class="endpoint-desc">Create new fan club</div>
+                </div>
+
+                <div class="endpoint">
+                    <div class="endpoint-method post">POST</div>
+                    <div class="endpoint-path">/api/social/fanclub/join</div>
+                    <div class="endpoint-desc">Join fan club with tier selection</div>
+                </div>
+
+                <div class="endpoint">
+                    <div class="endpoint-method post">POST</div>
+                    <div class="endpoint-path">/api/social/social/schedule</div>
+                    <div class="endpoint-desc">Schedule social media post</div>
+                </div>
+
+                <div class="endpoint">
+                    <div class="endpoint-method post">POST</div>
+                    <div class="endpoint-path">/api/social/influencer/discover</div>
+                    <div class="endpoint-desc">Discover influencers by criteria</div>
+                </div>
+
+                <div class="endpoint">
+                    <div class="endpoint-method post">POST</div>
+                    <div class="endpoint-path">/api/social/challenges/create</div>
+                    <div class="endpoint-desc">Create community challenge</div>
+                </div>
+
+                <div class="endpoint">
+                    <div class="endpoint-method get">GET</div>
+                    <div class="endpoint-path">/api/social/social-dashboard/:artistId</div>
+                    <div class="endpoint-desc">Get unified social dashboard</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="demo-section">
+            <h3>🎯 Try the Features</h3>
+            <p>Test the enhanced social features with live API calls:</p>
+            
+            <div class="demo-buttons">
+                <button class="demo-btn" onclick="testFeature('collaboration')">Test Collaboration Network</button>
+                <button class="demo-btn" onclick="testFeature('fanclub')">Test Fan Club System</button>
+                <button class="demo-btn" onclick="testFeature('social')">Test Social Scheduler</button>
+                <button class="demo-btn" onclick="testFeature('influencer')">Test Influencer Tools</button>
+                <button class="demo-btn" onclick="testFeature('challenges')">Test Community Challenges</button>
+                <button class="demo-btn" onclick="testFeature('dashboard')">Test Full Dashboard</button>
+            </div>
+            
+            <div id="demo-output" class="demo-output"></div>
+        </div>
+
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-number">5</div>
+                <div class="stat-label">Social Features</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">25+</div>
+                <div class="stat-label">API Endpoints</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">∞</div>
+                <div class="stat-label">Scalability</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">100%</div>
+                <div class="stat-label">Event-Driven</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        async function testFeature(feature) {
+            const output = document.getElementById('demo-output');
+            output.style.display = 'block';
+            output.innerHTML = `<div>🔄 Testing ${feature} feature...</div>`;
+
+            const testData = {
+                collaboration: {
+                    endpoint: '/api/social/collaboration/find-partners/test-artist-123',
+                    method: 'GET'
+                },
+                fanclub: {
+                    endpoint: '/api/social/fanclub/create',
+                    method: 'POST',
+                    data: {
+                        artistId: 'test-artist-123',
+                        clubData: {
+                            name: 'Demo Fan Club',
+                            description: 'Test fan club for demonstration'
+                        }
+                    }
+                },
+                social: {
+                    endpoint: '/api/social/social/schedule',
+                    method: 'POST',
+                    data: {
+                        artistId: 'test-artist-123',
+                        postData: {
+                            platforms: ['twitter', 'instagram'],
+                            content: {
+                                text: 'Demo post from Not a Label social scheduler! 🎵',
+                                hashtags: ['NotALabel', 'IndependentArtist', 'Demo']
+                            },
+                            scheduledTime: new Date(Date.now() + 60000).toISOString()
+                        }
+                    }
+                },
+                influencer: {
+                    endpoint: '/api/social/influencer/discover',
+                    method: 'POST',
+                    data: {
+                        criteria: {
+                            genre: 'pop',
+                            followerRange: { min: 10000, max: 100000 },
+                            platform: 'instagram'
+                        }
+                    }
+                },
+                challenges: {
+                    endpoint: '/api/social/challenges/active',
+                    method: 'GET'
+                },
+                dashboard: {
+                    endpoint: '/api/social/social-dashboard/test-artist-123',
+                    method: 'GET'
+                }
+            };
+
+            try {
+                const config = testData[feature];
+                const options = {
+                    method: config.method,
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                };
+
+                if (config.data) {
+                    options.body = JSON.stringify(config.data);
+                }
+
+                const response = await fetch(config.endpoint, options);
+                const result = await response.json();
+
+                output.innerHTML = `
+                    <div>✅ ${feature.charAt(0).toUpperCase() + feature.slice(1)} Feature Test Result:</div>
+                    <div style="margin-top: 10px; color: #68d391;">
+                        Status: ${response.status} ${response.statusText}
+                    </div>
+                    <div style="margin-top: 10px; color: #a0aec0;">
+                        ${JSON.stringify(result, null, 2)}
+                    </div>
+                `;
+            } catch (error) {
+                output.innerHTML = `
+                    <div>❌ Error testing ${feature} feature:</div>
+                    <div style="margin-top: 10px; color: #fc8181;">
+                        ${error.message}
+                    </div>
+                    <div style="margin-top: 10px; color: #a0aec0;">
+                        Note: API endpoints are now available for integration
+                    </div>
+                `;
+            }
+        }
+
+        // Auto-scroll to demo output when visible
+        const observer = new MutationObserver((mutations) => {
+            mutations.forEach((mutation) => {
+                if (mutation.target.style.display === 'block') {
+                    mutation.target.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                }
+            });
+        });
+
+        observer.observe(document.getElementById('demo-output'), {
+            attributes: true,
+            attributeFilter: ['style']
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,24 @@
+# GitHub Push Commands for Not-a-Label Repository
+# ================================================
+
+# Step 1: Set your GitHub username and token
+# Replace YOUR_GITHUB_USERNAME with your actual GitHub username
+# Replace YOUR_PERSONAL_ACCESS_TOKEN with your GitHub Personal Access Token
+
+export GITHUB_USERNAME="YOUR_GITHUB_USERNAME"
+export GITHUB_TOKEN="YOUR_PERSONAL_ACCESS_TOKEN"
+
+# Step 2: Update the remote URL with authentication
+git remote set-url origin https://${GITHUB_USERNAME}:${GITHUB_TOKEN}@github.com/Not-a-Label/notalabel.git
+
+# Step 3: Push to GitHub
+git push -u origin main
+
+# Alternative: If you want to avoid exposing your token in shell history,
+# you can use this single command (replace placeholders):
+# git remote set-url origin https://YOUR_GITHUB_USERNAME:YOUR_PERSONAL_ACCESS_TOKEN@github.com/Not-a-Label/notalabel.git
+
+# After successful push:
+# - Check your repository at https://github.com/Not-a-Label/notalabel
+# - The token will be saved in your macOS keychain for future pushes
+# - You won't need to enter it again

@@ -1,0 +1,539 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Not a Label - Artist Collaboration Matcher</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .header {
+            text-align: center;
+            color: white;
+            padding: 40px 0;
+        }
+        
+        .header h1 {
+            font-size: 3em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+        
+        .main-content {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+        
+        .artist-profile {
+            background: #f8f9fa;
+            padding: 30px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+        }
+        
+        .profile-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .profile-avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 2em;
+            margin-right: 20px;
+        }
+        
+        .profile-info h2 {
+            font-size: 1.8em;
+            margin-bottom: 5px;
+        }
+        
+        .profile-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        
+        .tag {
+            padding: 6px 15px;
+            background: #e9ecef;
+            border-radius: 20px;
+            font-size: 0.9em;
+            color: #495057;
+        }
+        
+        .tag.genre {
+            background: #d4edda;
+            color: #155724;
+        }
+        
+        .tag.skill {
+            background: #d1ecf1;
+            color: #0c5460;
+        }
+        
+        .find-collaborators-btn {
+            width: 100%;
+            padding: 15px 30px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin: 30px 0;
+        }
+        
+        .find-collaborators-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+        }
+        
+        .matches-section {
+            margin-top: 40px;
+        }
+        
+        .matches-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+        
+        .matches-header h3 {
+            font-size: 1.8em;
+            color: #333;
+        }
+        
+        .filter-options {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .filter-btn {
+            padding: 8px 16px;
+            border: 1px solid #ddd;
+            background: white;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .filter-btn.active {
+            background: #667eea;
+            color: white;
+            border-color: #667eea;
+        }
+        
+        .match-card {
+            background: white;
+            border: 1px solid #e9ecef;
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 20px;
+            transition: all 0.3s ease;
+        }
+        
+        .match-card:hover {
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            transform: translateY(-2px);
+        }
+        
+        .match-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: 20px;
+        }
+        
+        .match-artist {
+            display: flex;
+            align-items: center;
+        }
+        
+        .match-avatar {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.5em;
+            margin-right: 15px;
+        }
+        
+        .match-score {
+            text-align: center;
+            padding: 10px;
+        }
+        
+        .score-circle {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: #f8f9fa;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            margin: 0 auto;
+        }
+        
+        .score-number {
+            font-size: 1.8em;
+            font-weight: bold;
+            color: #667eea;
+        }
+        
+        .score-label {
+            font-size: 0.8em;
+            color: #6c757d;
+        }
+        
+        .match-details {
+            margin: 20px 0;
+        }
+        
+        .match-reason {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+        }
+        
+        .collaboration-ideas {
+            margin-top: 15px;
+        }
+        
+        .collaboration-ideas h5 {
+            font-size: 1.1em;
+            margin-bottom: 10px;
+            color: #495057;
+        }
+        
+        .idea-list {
+            list-style: none;
+        }
+        
+        .idea-list li {
+            padding: 8px 0;
+            padding-left: 25px;
+            position: relative;
+        }
+        
+        .idea-list li:before {
+            content: "🎵";
+            position: absolute;
+            left: 0;
+        }
+        
+        .match-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        
+        .action-btn {
+            flex: 1;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .action-btn.primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        
+        .action-btn.secondary {
+            background: #f8f9fa;
+            color: #495057;
+            border: 1px solid #dee2e6;
+        }
+        
+        .action-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 60px;
+            color: #6c757d;
+        }
+        
+        .loading-spinner {
+            display: inline-block;
+            width: 50px;
+            height: 50px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 20px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin: 30px 0;
+        }
+        
+        .stat-card {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+        }
+        
+        .stat-number {
+            font-size: 2em;
+            font-weight: bold;
+            color: #667eea;
+            margin-bottom: 5px;
+        }
+        
+        .stat-label {
+            color: #6c757d;
+            font-size: 0.9em;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎸 Artist Collaboration Matcher</h1>
+            <p>Find your perfect musical collaborator powered by AI</p>
+        </div>
+        
+        <div class="main-content">
+            <div class="artist-profile">
+                <div class="profile-header">
+                    <div class="profile-avatar">JD</div>
+                    <div class="profile-info">
+                        <h2>Jamie Davis</h2>
+                        <p>Independent Artist • Los Angeles, CA</p>
+                    </div>
+                </div>
+                
+                <div class="profile-tags">
+                    <span class="tag genre">Indie Pop</span>
+                    <span class="tag genre">Electronic</span>
+                    <span class="tag skill">Vocals</span>
+                    <span class="tag skill">Production</span>
+                    <span class="tag skill">Songwriting</span>
+                </div>
+                
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-number">15K</div>
+                        <div class="stat-label">Monthly Listeners</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number">3</div>
+                        <div class="stat-label">Past Collaborations</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number">Emerging</div>
+                        <div class="stat-label">Career Stage</div>
+                    </div>
+                </div>
+            </div>
+            
+            <button class="find-collaborators-btn" onclick="findCollaborators()">
+                🔍 Find Collaborators
+            </button>
+            
+            <div class="matches-section" id="matchesSection" style="display: none;">
+                <div class="matches-header">
+                    <h3>🎯 Recommended Collaborators</h3>
+                    <div class="filter-options">
+                        <button class="filter-btn active">All</button>
+                        <button class="filter-btn">Local</button>
+                        <button class="filter-btn">Genre Match</button>
+                    </div>
+                </div>
+                
+                <div id="matchesList">
+                    <div class="loading">
+                        <div class="loading-spinner"></div>
+                        <p>Finding your perfect collaborators...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        function findCollaborators() {
+            const matchesSection = document.getElementById('matchesSection');
+            const matchesList = document.getElementById('matchesList');
+            
+            matchesSection.style.display = 'block';
+            
+            // Simulate API call delay
+            setTimeout(() => {
+                matchesList.innerHTML = generateMatches();
+            }, 2000);
+        }
+        
+        function generateMatches() {
+            const matches = [
+                {
+                    name: 'Alex Chen',
+                    initials: 'AC',
+                    score: 92,
+                    location: 'Los Angeles, CA',
+                    genres: ['Electronic', 'Indie Pop'],
+                    skills: ['Production', 'DJ', 'Mixing'],
+                    reason: 'Perfect genre match with complementary production skills. Alex\'s electronic expertise would blend beautifully with your indie pop style.',
+                    ideas: [
+                        'Electronic-indie fusion single',
+                        'Live DJ/vocal performance',
+                        'Collaborative EP exploring both styles'
+                    ]
+                },
+                {
+                    name: 'Maria Rodriguez',
+                    initials: 'MR',
+                    score: 85,
+                    location: 'San Francisco, CA',
+                    genres: ['Indie Folk', 'Pop'],
+                    skills: ['Guitar', 'Violin', 'Arrangement'],
+                    reason: 'Strong musical chemistry potential. Maria\'s acoustic instruments could add organic texture to your electronic production.',
+                    ideas: [
+                        'Acoustic reimagining of electronic tracks',
+                        'Folk-pop crossover single',
+                        'String arrangements for existing songs'
+                    ]
+                },
+                {
+                    name: 'Tyler Brooks',
+                    initials: 'TB',
+                    score: 78,
+                    location: 'Austin, TX',
+                    genres: ['Alternative', 'Indie Rock'],
+                    skills: ['Drums', 'Bass', 'Live Performance'],
+                    reason: 'Brings live band energy to electronic productions. Tyler\'s rhythm section expertise could transform studio tracks for live shows.',
+                    ideas: [
+                        'Live band arrangements',
+                        'Rock-electronic hybrid tracks',
+                        'Festival performance collaboration'
+                    ]
+                }
+            ];
+            
+            return matches.map(match => `
+                <div class="match-card">
+                    <div class="match-header">
+                        <div class="match-artist">
+                            <div class="match-avatar">${match.initials}</div>
+                            <div>
+                                <h4>${match.name}</h4>
+                                <p>${match.location}</p>
+                            </div>
+                        </div>
+                        <div class="match-score">
+                            <div class="score-circle">
+                                <div class="score-number">${match.score}</div>
+                                <div class="score-label">match</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="profile-tags">
+                        ${match.genres.map(g => `<span class="tag genre">${g}</span>`).join('')}
+                        ${match.skills.map(s => `<span class="tag skill">${s}</span>`).join('')}
+                    </div>
+                    
+                    <div class="match-details">
+                        <div class="match-reason">
+                            <strong>Why this match works:</strong><br>
+                            ${match.reason}
+                        </div>
+                        
+                        <div class="collaboration-ideas">
+                            <h5>Potential Collaborations:</h5>
+                            <ul class="idea-list">
+                                ${match.ideas.map(idea => `<li>${idea}</li>`).join('')}
+                            </ul>
+                        </div>
+                    </div>
+                    
+                    <div class="match-actions">
+                        <button class="action-btn primary" onclick="connectWithArtist('${match.name}')">
+                            💬 Send Message
+                        </button>
+                        <button class="action-btn secondary" onclick="viewProfile('${match.name}')">
+                            👤 View Profile
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+        
+        function connectWithArtist(name) {
+            alert(`Connecting you with ${name}...`);
+        }
+        
+        function viewProfile(name) {
+            alert(`Opening ${name}'s profile...`);
+        }
+        
+        // Filter functionality
+        document.querySelectorAll('.filter-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+                // Filter logic would go here
+            });
+        });
+    </script>
+</body>
+</html>

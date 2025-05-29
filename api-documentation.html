@@ -1,0 +1,866 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Not a Label - API Documentation</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f5f7fa;
+            color: #333;
+            line-height: 1.6;
+        }
+        
+        .layout {
+            display: flex;
+            min-height: 100vh;
+        }
+        
+        /* Sidebar Navigation */
+        .sidebar {
+            width: 280px;
+            background: white;
+            border-right: 1px solid #e9ecef;
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
+            padding: 30px 20px;
+        }
+        
+        .api-logo {
+            font-size: 1.8em;
+            font-weight: 700;
+            margin-bottom: 10px;
+            color: #667eea;
+        }
+        
+        .api-version {
+            color: #666;
+            font-size: 0.9em;
+            margin-bottom: 30px;
+        }
+        
+        .nav-section {
+            margin-bottom: 25px;
+        }
+        
+        .nav-section-title {
+            font-weight: 600;
+            color: #495057;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            font-size: 0.8em;
+            letter-spacing: 1px;
+        }
+        
+        .nav-link {
+            display: block;
+            padding: 8px 15px;
+            color: #666;
+            text-decoration: none;
+            border-radius: 6px;
+            transition: all 0.3s ease;
+            margin-bottom: 5px;
+        }
+        
+        .nav-link:hover {
+            background: #f8f9fa;
+            color: #333;
+        }
+        
+        .nav-link.active {
+            background: #e7f3ff;
+            color: #667eea;
+            font-weight: 600;
+        }
+        
+        /* Main Content */
+        .main-content {
+            margin-left: 280px;
+            flex: 1;
+            padding: 40px;
+            max-width: 1000px;
+        }
+        
+        .page-header {
+            margin-bottom: 40px;
+        }
+        
+        .page-title {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            color: #1a1d23;
+        }
+        
+        .page-description {
+            font-size: 1.2em;
+            color: #666;
+            line-height: 1.8;
+        }
+        
+        /* Endpoint Documentation */
+        .endpoint-section {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        }
+        
+        .endpoint-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .method-badge {
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-weight: 700;
+            font-size: 0.9em;
+            text-transform: uppercase;
+        }
+        
+        .method-get {
+            background: #d4edda;
+            color: #155724;
+        }
+        
+        .method-post {
+            background: #cce5ff;
+            color: #004085;
+        }
+        
+        .method-put {
+            background: #fff3cd;
+            color: #856404;
+        }
+        
+        .method-delete {
+            background: #f8d7da;
+            color: #721c24;
+        }
+        
+        .endpoint-path {
+            font-family: 'Courier New', monospace;
+            font-size: 1.3em;
+            color: #495057;
+        }
+        
+        .endpoint-description {
+            color: #666;
+            margin-bottom: 25px;
+        }
+        
+        /* Code Blocks */
+        .code-block {
+            background: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+            position: relative;
+            overflow-x: auto;
+        }
+        
+        .code-lang {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: #667eea;
+            color: white;
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-size: 0.8em;
+            font-weight: 600;
+        }
+        
+        pre {
+            margin: 0;
+            font-family: 'Courier New', monospace;
+            font-size: 0.95em;
+            line-height: 1.5;
+        }
+        
+        code {
+            font-family: 'Courier New', monospace;
+            background: #e9ecef;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 0.9em;
+        }
+        
+        /* Parameters Table */
+        .params-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        
+        .params-table th {
+            text-align: left;
+            padding: 12px;
+            background: #f8f9fa;
+            font-weight: 600;
+            color: #495057;
+            border-bottom: 2px solid #e9ecef;
+        }
+        
+        .params-table td {
+            padding: 12px;
+            border-bottom: 1px solid #e9ecef;
+        }
+        
+        .param-name {
+            font-family: 'Courier New', monospace;
+            font-weight: 600;
+            color: #e83e8c;
+        }
+        
+        .param-type {
+            color: #007bff;
+            font-size: 0.9em;
+        }
+        
+        .param-required {
+            background: #dc3545;
+            color: white;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 0.8em;
+            font-weight: 600;
+        }
+        
+        .param-optional {
+            background: #6c757d;
+            color: white;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 0.8em;
+            font-weight: 600;
+        }
+        
+        /* Response Examples */
+        .response-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        
+        .response-tab {
+            padding: 8px 16px;
+            background: #e9ecef;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        
+        .response-tab.active {
+            background: #667eea;
+            color: white;
+        }
+        
+        /* Try It Out Section */
+        .try-it-section {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 25px;
+            margin-top: 30px;
+        }
+        
+        .try-it-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .try-it-title {
+            font-size: 1.3em;
+            font-weight: 600;
+        }
+        
+        .execute-btn {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 10px 24px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .execute-btn:hover {
+            background: #5a67d8;
+            transform: translateY(-1px);
+        }
+        
+        .input-field {
+            width: 100%;
+            padding: 10px 15px;
+            border: 1px solid #dee2e6;
+            border-radius: 6px;
+            margin-bottom: 15px;
+            font-family: 'Courier New', monospace;
+        }
+        
+        textarea.input-field {
+            min-height: 100px;
+            resize: vertical;
+        }
+        
+        /* Copy Button */
+        .copy-btn {
+            position: absolute;
+            top: 10px;
+            right: 60px;
+            background: #495057;
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 4px;
+            font-size: 0.8em;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .copy-btn:hover {
+            background: #343a40;
+        }
+        
+        /* Authentication Section */
+        .auth-info {
+            background: #e7f3ff;
+            border: 1px solid #b8daff;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+        
+        .auth-info-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+        
+        .auth-icon {
+            font-size: 1.5em;
+        }
+        
+        /* Rate Limits */
+        .rate-limit-info {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+        
+        /* SDK Examples */
+        .sdk-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin: 30px 0;
+        }
+        
+        .sdk-card {
+            background: white;
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            padding: 20px;
+            text-align: center;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .sdk-card:hover {
+            border-color: #667eea;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .sdk-icon {
+            font-size: 3em;
+            margin-bottom: 15px;
+        }
+        
+        .sdk-name {
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+        
+        .sdk-version {
+            color: #666;
+            font-size: 0.9em;
+        }
+    </style>
+</head>
+<body>
+    <div class="layout">
+        <!-- Sidebar -->
+        <nav class="sidebar">
+            <div class="api-logo">🎵 Not a Label API</div>
+            <div class="api-version">Version 1.0.0</div>
+            
+            <div class="nav-section">
+                <div class="nav-section-title">Getting Started</div>
+                <a href="#introduction" class="nav-link active">Introduction</a>
+                <a href="#authentication" class="nav-link">Authentication</a>
+                <a href="#rate-limits" class="nav-link">Rate Limits</a>
+                <a href="#errors" class="nav-link">Error Handling</a>
+            </div>
+            
+            <div class="nav-section">
+                <div class="nav-section-title">Core Endpoints</div>
+                <a href="#users" class="nav-link">Users</a>
+                <a href="#artists" class="nav-link">Artists</a>
+                <a href="#analytics" class="nav-link">Analytics</a>
+                <a href="#recommendations" class="nav-link">Recommendations</a>
+            </div>
+            
+            <div class="nav-section">
+                <div class="nav-section-title">Features</div>
+                <a href="#collaborations" class="nav-link">Collaborations</a>
+                <a href="#marketing" class="nav-link">Marketing</a>
+                <a href="#revenue" class="nav-link">Revenue</a>
+                <a href="#notifications" class="nav-link">Notifications</a>
+            </div>
+            
+            <div class="nav-section">
+                <div class="nav-section-title">Resources</div>
+                <a href="#sdks" class="nav-link">SDKs</a>
+                <a href="#webhooks" class="nav-link">Webhooks</a>
+                <a href="#changelog" class="nav-link">Changelog</a>
+            </div>
+        </nav>
+        
+        <!-- Main Content -->
+        <main class="main-content">
+            <div class="page-header">
+                <h1 class="page-title">API Documentation</h1>
+                <p class="page-description">
+                    Welcome to the Not a Label API! Our API provides programmatic access to all platform features,
+                    enabling you to build powerful integrations and applications for independent artists.
+                </p>
+            </div>
+            
+            <!-- Introduction Section -->
+            <div class="endpoint-section" id="introduction">
+                <h2>Base URL</h2>
+                <div class="code-block">
+                    <span class="code-lang">BASE URL</span>
+                    <pre>https://not-a-label.art/api/v1</pre>
+                </div>
+                
+                <h2 style="margin-top: 30px;">Quick Start</h2>
+                <p>Get started with the Not a Label API in just a few steps:</p>
+                
+                <ol style="margin: 20px 0; padding-left: 20px;">
+                    <li>Sign up for a Not a Label account</li>
+                    <li>Generate your API key from the dashboard</li>
+                    <li>Include your API key in the Authorization header</li>
+                    <li>Make your first API call!</li>
+                </ol>
+                
+                <div class="code-block">
+                    <span class="code-lang">cURL</span>
+                    <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                    <pre>curl -X GET https://not-a-label.art/api/v1/users/me \
+  -H "Authorization: Bearer YOUR_API_KEY"</pre>
+                </div>
+            </div>
+            
+            <!-- Authentication Section -->
+            <div class="endpoint-section" id="authentication">
+                <h2>Authentication</h2>
+                
+                <div class="auth-info">
+                    <div class="auth-info-header">
+                        <span class="auth-icon">🔑</span>
+                        <strong>API Key Authentication</strong>
+                    </div>
+                    <p>All API requests require authentication using an API key. Include your API key in the Authorization header:</p>
+                </div>
+                
+                <div class="code-block">
+                    <span class="code-lang">Header</span>
+                    <pre>Authorization: Bearer nal_k3y_a1b2c3d4e5f6...</pre>
+                </div>
+                
+                <h3 style="margin-top: 30px;">OAuth 2.0</h3>
+                <p>For applications that need to act on behalf of users, we support OAuth 2.0 authentication flow:</p>
+                
+                <div class="code-block">
+                    <span class="code-lang">OAuth Flow</span>
+                    <pre>1. Redirect user to: https://not-a-label.art/oauth/authorize
+2. User grants permission
+3. Receive authorization code
+4. Exchange code for access token</pre>
+                </div>
+            </div>
+            
+            <!-- User Endpoints -->
+            <div class="endpoint-section">
+                <div class="endpoint-header">
+                    <span class="method-badge method-get">GET</span>
+                    <span class="endpoint-path">/users/me</span>
+                </div>
+                
+                <p class="endpoint-description">
+                    Retrieve the authenticated user's profile information.
+                </p>
+                
+                <h3>Response</h3>
+                <div class="response-tabs">
+                    <button class="response-tab active">200 OK</button>
+                    <button class="response-tab">401 Unauthorized</button>
+                </div>
+                
+                <div class="code-block">
+                    <span class="code-lang">JSON</span>
+                    <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                    <pre>{
+  "id": "usr_1234567890",
+  "email": "artist@example.com",
+  "name": "Jamie Davis",
+  "type": "artist",
+  "profile": {
+    "bio": "Independent artist from LA",
+    "genres": ["indie", "electronic"],
+    "location": "Los Angeles, CA",
+    "website": "https://jamiedavis.music"
+  },
+  "stats": {
+    "followers": 15420,
+    "monthlyListeners": 28500,
+    "totalPlays": 1250000
+  },
+  "createdAt": "2025-01-15T10:30:00Z"
+}</pre>
+                </div>
+                
+                <!-- Try It Out -->
+                <div class="try-it-section">
+                    <div class="try-it-header">
+                        <h3 class="try-it-title">Try it out</h3>
+                        <button class="execute-btn" onclick="executeRequest()">Execute</button>
+                    </div>
+                    
+                    <input type="text" class="input-field" placeholder="Enter your API key" id="apiKey">
+                    
+                    <div id="responseArea" style="display: none;">
+                        <h4 style="margin: 20px 0 10px;">Response:</h4>
+                        <div class="code-block">
+                            <pre id="responseContent">Loading...</pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Analytics Endpoint -->
+            <div class="endpoint-section">
+                <div class="endpoint-header">
+                    <span class="method-badge method-post">POST</span>
+                    <span class="endpoint-path">/analytics/track</span>
+                </div>
+                
+                <p class="endpoint-description">
+                    Track custom analytics events for your application or integration.
+                </p>
+                
+                <h3>Parameters</h3>
+                <table class="params-table">
+                    <thead>
+                        <tr>
+                            <th>Parameter</th>
+                            <th>Type</th>
+                            <th>Required</th>
+                            <th>Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><span class="param-name">eventName</span></td>
+                            <td><span class="param-type">string</span></td>
+                            <td><span class="param-required">Required</span></td>
+                            <td>Name of the event to track</td>
+                        </tr>
+                        <tr>
+                            <td><span class="param-name">eventCategory</span></td>
+                            <td><span class="param-type">string</span></td>
+                            <td><span class="param-required">Required</span></td>
+                            <td>Category of the event (e.g., "navigation", "engagement")</td>
+                        </tr>
+                        <tr>
+                            <td><span class="param-name">eventLabel</span></td>
+                            <td><span class="param-type">string</span></td>
+                            <td><span class="param-optional">Optional</span></td>
+                            <td>Additional label for the event</td>
+                        </tr>
+                        <tr>
+                            <td><span class="param-name">eventValue</span></td>
+                            <td><span class="param-type">number</span></td>
+                            <td><span class="param-optional">Optional</span></td>
+                            <td>Numeric value associated with the event</td>
+                        </tr>
+                        <tr>
+                            <td><span class="param-name">sessionId</span></td>
+                            <td><span class="param-type">string</span></td>
+                            <td><span class="param-optional">Optional</span></td>
+                            <td>Session identifier for grouping events</td>
+                        </tr>
+                    </tbody>
+                </table>
+                
+                <h3>Request Example</h3>
+                <div class="code-block">
+                    <span class="code-lang">cURL</span>
+                    <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                    <pre>curl -X POST https://not-a-label.art/api/v1/analytics/track \
+  -H "Authorization: Bearer YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "eventName": "song_played",
+    "eventCategory": "engagement",
+    "eventLabel": "homepage_player",
+    "eventValue": 180,
+    "sessionId": "sess_abc123"
+  }'</pre>
+                </div>
+            </div>
+            
+            <!-- Recommendations Endpoint -->
+            <div class="endpoint-section">
+                <div class="endpoint-header">
+                    <span class="method-badge method-post">POST</span>
+                    <span class="endpoint-path">/recommendations/personalized</span>
+                </div>
+                
+                <p class="endpoint-description">
+                    Get AI-powered personalized music recommendations based on user preferences.
+                </p>
+                
+                <h3>Request Body</h3>
+                <div class="code-block">
+                    <span class="code-lang">JSON</span>
+                    <pre>{
+  "favoriteGenres": ["indie", "electronic"],
+  "recentlyPlayed": ["song_123", "song_456"],
+  "mood": "energetic",
+  "activity": "working out"
+}</pre>
+                </div>
+                
+                <h3>Response</h3>
+                <div class="code-block">
+                    <span class="code-lang">JSON</span>
+                    <pre>{
+  "success": true,
+  "recommendations": [
+    {
+      "id": "rec_789",
+      "artist": "Echo Valley",
+      "song": "Electric Dreams",
+      "genre": "Electronic",
+      "reason": "Matches your energetic mood and electronic preferences",
+      "confidence": 0.92
+    }
+  ],
+  "generatedAt": "2025-05-27T21:30:00Z"
+}</pre>
+                </div>
+            </div>
+            
+            <!-- Rate Limits -->
+            <div class="endpoint-section">
+                <h2>Rate Limits</h2>
+                
+                <div class="rate-limit-info">
+                    <strong>⚡ API Rate Limits</strong>
+                    <p style="margin-top: 10px;">To ensure fair usage, the API has the following rate limits:</p>
+                </div>
+                
+                <table class="params-table">
+                    <thead>
+                        <tr>
+                            <th>Plan</th>
+                            <th>Requests/Hour</th>
+                            <th>Requests/Day</th>
+                            <th>Burst Rate</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Free</td>
+                            <td>100</td>
+                            <td>1,000</td>
+                            <td>10 req/sec</td>
+                        </tr>
+                        <tr>
+                            <td>Artist</td>
+                            <td>1,000</td>
+                            <td>10,000</td>
+                            <td>50 req/sec</td>
+                        </tr>
+                        <tr>
+                            <td>Pro</td>
+                            <td>10,000</td>
+                            <td>100,000</td>
+                            <td>100 req/sec</td>
+                        </tr>
+                    </tbody>
+                </table>
+                
+                <p style="margin-top: 20px;">Rate limit information is included in response headers:</p>
+                <div class="code-block">
+                    <pre>X-RateLimit-Limit: 1000
+X-RateLimit-Remaining: 999
+X-RateLimit-Reset: 1622470800</pre>
+                </div>
+            </div>
+            
+            <!-- SDKs Section -->
+            <div class="endpoint-section" id="sdks">
+                <h2>Official SDKs</h2>
+                <p>Use our official SDKs to integrate Not a Label into your applications quickly:</p>
+                
+                <div class="sdk-grid">
+                    <div class="sdk-card" onclick="window.open('https://github.com/notalabel/js-sdk')">
+                        <div class="sdk-icon">🟨</div>
+                        <div class="sdk-name">JavaScript/Node.js</div>
+                        <div class="sdk-version">v1.2.0</div>
+                    </div>
+                    
+                    <div class="sdk-card" onclick="window.open('https://github.com/notalabel/python-sdk')">
+                        <div class="sdk-icon">🐍</div>
+                        <div class="sdk-name">Python</div>
+                        <div class="sdk-version">v1.1.0</div>
+                    </div>
+                    
+                    <div class="sdk-card" onclick="window.open('https://github.com/notalabel/ruby-sdk')">
+                        <div class="sdk-icon">💎</div>
+                        <div class="sdk-name">Ruby</div>
+                        <div class="sdk-version">v1.0.0</div>
+                    </div>
+                    
+                    <div class="sdk-card" onclick="window.open('https://github.com/notalabel/php-sdk')">
+                        <div class="sdk-icon">🐘</div>
+                        <div class="sdk-name">PHP</div>
+                        <div class="sdk-version">v1.0.0</div>
+                    </div>
+                </div>
+                
+                <h3 style="margin-top: 30px;">Installation Examples</h3>
+                
+                <h4>JavaScript/Node.js</h4>
+                <div class="code-block">
+                    <span class="code-lang">npm</span>
+                    <pre>npm install @notalabel/sdk</pre>
+                </div>
+                
+                <h4>Python</h4>
+                <div class="code-block">
+                    <span class="code-lang">pip</span>
+                    <pre>pip install notalabel</pre>
+                </div>
+            </div>
+        </main>
+    </div>
+    
+    <script>
+        // Navigation highlighting
+        document.querySelectorAll('.nav-link').forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                
+                // Remove active class from all links
+                document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+                
+                // Add active class to clicked link
+                this.classList.add('active');
+                
+                // Smooth scroll to section
+                const targetId = this.getAttribute('href').substring(1);
+                const targetSection = document.getElementById(targetId);
+                
+                if (targetSection) {
+                    targetSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+            });
+        });
+        
+        // Copy code functionality
+        function copyCode(button) {
+            const codeBlock = button.parentElement.querySelector('pre');
+            const text = codeBlock.textContent;
+            
+            navigator.clipboard.writeText(text).then(() => {
+                const originalText = button.textContent;
+                button.textContent = '✓ Copied!';
+                setTimeout(() => {
+                    button.textContent = originalText;
+                }, 2000);
+            });
+        }
+        
+        // Execute API request
+        function executeRequest() {
+            const apiKey = document.getElementById('apiKey').value;
+            const responseArea = document.getElementById('responseArea');
+            const responseContent = document.getElementById('responseContent');
+            
+            if (!apiKey) {
+                alert('Please enter your API key');
+                return;
+            }
+            
+            responseArea.style.display = 'block';
+            responseContent.textContent = 'Loading...';
+            
+            // Simulate API call
+            setTimeout(() => {
+                const mockResponse = {
+                    id: "usr_demo123",
+                    email: "demo@example.com",
+                    name: "Demo User",
+                    type: "artist",
+                    profile: {
+                        bio: "Demo artist account",
+                        genres: ["indie", "pop"],
+                        location: "Los Angeles, CA"
+                    },
+                    stats: {
+                        followers: 1234,
+                        monthlyListeners: 5678,
+                        totalPlays: 98765
+                    },
+                    createdAt: new Date().toISOString()
+                };
+                
+                responseContent.textContent = JSON.stringify(mockResponse, null, 2);
+            }, 1000);
+        }
+        
+        // Response tab switching
+        document.querySelectorAll('.response-tab').forEach(tab => {
+            tab.addEventListener('click', function() {
+                document.querySelectorAll('.response-tab').forEach(t => t.classList.remove('active'));
+                this.classList.add('active');
+            });
+        });
+    </script>
+</body>
+</html>

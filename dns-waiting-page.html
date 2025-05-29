@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Not a Label - Coming Soon</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 2rem;
+        }
+        
+        .container {
+            max-width: 600px;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 3rem;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+        }
+        
+        h1 {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            animation: pulse 2s ease-in-out infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.8; }
+        }
+        
+        .logo {
+            font-size: 4rem;
+            margin-bottom: 2rem;
+        }
+        
+        p {
+            font-size: 1.2rem;
+            line-height: 1.6;
+            margin-bottom: 1.5rem;
+            opacity: 0.9;
+        }
+        
+        .status {
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            padding: 1.5rem;
+            margin: 2rem 0;
+        }
+        
+        .status-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin: 0.5rem 0;
+            padding: 0.5rem;
+        }
+        
+        .status-indicator {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            display: inline-block;
+            margin-left: 1rem;
+        }
+        
+        .online { background: #10b981; }
+        .pending { background: #f59e0b; animation: blink 1s ease-in-out infinite; }
+        
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
+        }
+        
+        .access-link {
+            display: inline-block;
+            background: white;
+            color: #667eea;
+            padding: 1rem 2rem;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: 600;
+            margin-top: 1rem;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        
+        .access-link:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+        }
+        
+        .info {
+            margin-top: 2rem;
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="logo">🎵</div>
+        <h1>Not a Label</h1>
+        <p>Empowering Independent Musicians with AI</p>
+        
+        <div class="status">
+            <h3>Platform Status</h3>
+            <div class="status-item">
+                <span>Platform Ready</span>
+                <span class="status-indicator online"></span>
+            </div>
+            <div class="status-item">
+                <span>DNS Propagation</span>
+                <span class="status-indicator pending"></span>
+            </div>
+            <div class="status-item">
+                <span>SSL Certificate</span>
+                <span class="status-indicator pending"></span>
+            </div>
+        </div>
+        
+        <p>We're updating our domain configuration. The platform is fully operational and can be accessed below:</p>
+        
+        <a href="http://159.89.247.208" class="access-link">Access Platform Now</a>
+        
+        <div class="info">
+            <p>🌐 Domain: not-a-label.art</p>
+            <p>📍 New Server: 159.89.247.208</p>
+            <p>⏱️ Estimated Time: 24-48 hours for global DNS propagation</p>
+        </div>
+    </div>
+    
+    <script>
+        // Check DNS propagation every 5 minutes
+        setInterval(() => {
+            fetch('https://not-a-label.art/api/health')
+                .then(response => {
+                    if (response.ok) {
+                        window.location.href = 'https://not-a-label.art';
+                    }
+                })
+                .catch(() => {
+                    // Still propagating
+                });
+        }, 300000); // 5 minutes
+    </script>
+</body>
+</html>
