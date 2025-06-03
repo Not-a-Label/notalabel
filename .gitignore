@@ -123,3 +123,12 @@ deploy-files.*
 # Deployment archives
 deploy-20*.tar.gz
 deploy.tar.gz
+
+# Scripts and configuration files that may contain secrets
+*.sh
+*stripe*
+*deploy*
+*final*
+ai-routes*
+*secret*
+*key*
