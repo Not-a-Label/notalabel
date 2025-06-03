@@ -109,7 +109,17 @@ Downloads/
 
 # Keep important example files
 !.env.example
-!env.example*.tar.gz
+!env.example
+
+# Large deployment files and archives
+*.tar.gz
 *.zip
-node_modules/
-.env
+*.rar
+complete-deploy.*
+frontend-update.*
+deploy-*.tar.gz
+deploy-files.*
+
+# Deployment archives
+deploy-20*.tar.gz
+deploy.tar.gz
