@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Calculate Your Real Worth as an Independent Artist</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta property="og:title" content="Calculate Your Real Worth as an Independent Artist">
+    <meta property="og:description" content="See how much more you could earn by selling directly to fans vs streaming. The results will shock you.">
+    <meta property="og:image" content="https://not-a-label.art/social-share.png">
+    <meta property="og:url" content="https://not-a-label.art/calculator">
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        
+        .calculator-container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+            max-width: 600px;
+            width: 100%;
+            overflow: hidden;
+            animation: slideUp 0.8s ease-out;
+        }
+        
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(50px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 28px;
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+        
+        .header p {
+            font-size: 16px;
+            opacity: 0.9;
+        }
+        
+        .calculator-body {
+            padding: 40px 30px;
+        }
+        
+        .input-group {
+            margin-bottom: 25px;
+        }
+        
+        .input-label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #333;
+            font-size: 14px;
+        }
+        
+        .input-field {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #e1e5e9;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+        
+        .input-field:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+        
+        .calculate-btn {
+            width: 100%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 18px;
+            border-radius: 12px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            margin-bottom: 30px;
+        }
+        
+        .calculate-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+        }
+        
+        .results {
+            display: none;
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 30px;
+            margin-top: 20px;
+        }
+        
+        .results.show {
+            display: block;
+            animation: fadeIn 0.5s ease-out;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .comparison-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 25px;
+        }
+        
+        .comparison-card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            border: 2px solid transparent;
+            transition: all 0.3s;
+        }
+        
+        .streaming-card {
+            border-color: #ff6b6b;
+        }
+        
+        .direct-card {
+            border-color: #10b981;
+            background: linear-gradient(135deg, #d4edda 0%, #c8e6c9 100%);
+        }
+        
+        .card-title {
+            font-size: 14px;
+            font-weight: bold;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .card-amount {
+            font-size: 32px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        
+        .streaming-card .card-amount {
+            color: #ff6b6b;
+        }
+        
+        .direct-card .card-amount {
+            color: #10b981;
+        }
+        
+        .card-subtitle {
+            font-size: 12px;
+            opacity: 0.7;
+        }
+        
+        .difference-highlight {
+            background: linear-gradient(135deg, #10b981 0%, #16a085 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+            margin: 20px 0;
+        }
+        
+        .difference-amount {
+            font-size: 36px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        
+        .share-section {
+            text-align: center;
+            padding-top: 25px;
+            border-top: 2px solid #e1e5e9;
+        }
+        
+        .share-text {
+            font-size: 16px;
+            margin-bottom: 20px;
+            color: #666;
+        }
+        
+        .share-buttons {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        
+        .share-btn {
+            padding: 12px 20px;
+            border: none;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: transform 0.2s;
+        }
+        
+        .share-btn:hover {
+            transform: translateY(-2px);
+        }
+        
+        .twitter-btn {
+            background: #1da1f2;
+            color: white;
+        }
+        
+        .facebook-btn {
+            background: #4267B2;
+            color: white;
+        }
+        
+        .instagram-btn {
+            background: linear-gradient(45deg, #f09433 0%,#e6683c 25%,#dc2743 50%,#cc2366 75%,#bc1888 100%);
+            color: white;
+        }
+        
+        .join-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 20px;
+            width: 100%;
+            transition: transform 0.2s;
+        }
+        
+        .join-btn:hover {
+            transform: translateY(-2px);
+        }
+        
+        .founding-counter {
+            background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%);
+            color: #744210;
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+            margin: 20px 0;
+            font-weight: bold;
+        }
+        
+        .counter-number {
+            font-size: 24px;
+            font-weight: bold;
+        }
+        
+        .manifesto-link {
+            background: #333;
+            color: white;
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+            margin-top: 20px;
+        }
+        
+        .manifesto-link h3 {
+            margin-bottom: 10px;
+        }
+        
+        .manifesto-link a {
+            color: #ffd700;
+            text-decoration: none;
+            font-weight: bold;
+        }
+        
+        .spotify-shame {
+            background: #ff6b6b;
+            color: white;
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+            margin: 15px 0;
+            font-weight: bold;
+        }
+        
+        @media (max-width: 768px) {
+            .comparison-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .share-buttons {
+                flex-direction: column;
+            }
+            
+            .header h1 {
+                font-size: 24px;
+            }
+            
+            .calculator-body {
+                padding: 30px 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="calculator-container">
+        <div class="header">
+            <h1>💰 Calculate Your Real Worth</h1>
+            <p>See how much more you could earn selling directly to fans</p>
+        </div>
+        
+        <div class="calculator-body">
+            <div class="input-group">
+                <label class="input-label">How many monthly streams do you currently get?</label>
+                <input type="number" class="input-field" id="monthlyStreams" placeholder="e.g., 50,000" min="0">
+            </div>
+            
+            <div class="input-group">
+                <label class="input-label">How much would you price your album? (USD)</label>
+                <input type="number" class="input-field" id="albumPrice" value="10" min="1" step="0.01">
+            </div>
+            
+            <div class="input-group">
+                <label class="input-label">How many dedicated fans do you have?</label>
+                <input type="number" class="input-field" id="dedicatedFans" placeholder="e.g., 500" min="0">
+            </div>
+            
+            <button class="calculate-btn" onclick="calculateWorth()">
+                🔥 Show Me My Real Worth
+            </button>
+            
+            <div id="results" class="results">
+                <div class="comparison-grid">
+                    <div class="comparison-card streaming-card">
+                        <div class="card-title">Streaming Revenue</div>
+                        <div class="card-amount" id="streamingRevenue">$0</div>
+                        <div class="card-subtitle">From your monthly streams</div>
+                    </div>
+                    
+                    <div class="comparison-card direct-card">
+                        <div class="card-title">Direct Sales Revenue</div>
+                        <div class="card-amount" id="directRevenue">$0</div>
+                        <div class="card-subtitle">If fans bought your album</div>
+                    </div>
+                </div>
+                
+                <div class="difference-highlight">
+                    <div>You could earn</div>
+                    <div class="difference-amount" id="difference">$0</div>
+                    <div>MORE per month selling directly!</div>
+                </div>
+                
+                <div id="spotifyShame" class="spotify-shame" style="display: none;">
+                    <div>🤯 You'd need <span id="streamsNeeded">0</span> streams to earn what <span id="fansNeeded">0</span> dedicated fans could give you!</div>
+                </div>
+                
+                <div class="founding-counter">
+                    <div>⚡ FOUNDING ARTIST OPPORTUNITY ⚡</div>
+                    <div><span class="counter-number" id="spotsRemaining">93</span> spots remaining</div>
+                    <div>Lifetime 10% platform fee vs 15% standard</div>
+                </div>
+                
+                <div class="share-section">
+                    <div class="share-text">💥 Share your results and wake up other artists!</div>
+                    <div class="share-buttons">
+                        <a href="#" class="share-btn twitter-btn" onclick="shareToTwitter()">
+                            🐦 Twitter
+                        </a>
+                        <a href="#" class="share-btn instagram-btn" onclick="shareToInstagram()">
+                            📸 Instagram
+                        </a>
+                        <a href="#" class="share-btn facebook-btn" onclick="shareToFacebook()">
+                            📘 Facebook
+                        </a>
+                    </div>
+                    
+                    <button class="join-btn" onclick="joinPlatform()">
+                        🚀 Join Not a Label - Keep 100% of Your Revenue
+                    </button>
+                </div>
+            </div>
+            
+            <div class="manifesto-link">
+                <h3>✊ Read the Independent Artist Manifesto</h3>
+                <p><a href="#" onclick="openManifesto()">Join the revolution against streaming exploitation</a></p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let lastCalculation = null;
+        
+        function calculateWorth() {
+            const monthlyStreams = parseInt(document.getElementById('monthlyStreams').value) || 0;
+            const albumPrice = parseFloat(document.getElementById('albumPrice').value) || 10;
+            const dedicatedFans = parseInt(document.getElementById('dedicatedFans').value) || 0;
+            
+            if (monthlyStreams === 0 && dedicatedFans === 0) {
+                alert('Please enter your monthly streams or number of dedicated fans!');
+                return;
+            }
+            
+            // Streaming calculation (Spotify pays ~$0.003 per stream)
+            const streamingRevenue = monthlyStreams * 0.003;
+            
+            // Direct sales calculation (assuming 20% of fans buy monthly)
+            const directRevenue = dedicatedFans * albumPrice * 0.2;
+            
+            // Calculate difference
+            const difference = directRevenue - streamingRevenue;
+            
+            // Calculate streams needed to equal direct sales
+            const streamsNeeded = Math.round(directRevenue / 0.003);
+            
+            // Update display
+            document.getElementById('streamingRevenue').textContent = '$' + streamingRevenue.toFixed(2);
+            document.getElementById('directRevenue').textContent = '$' + directRevenue.toFixed(2);
+            document.getElementById('difference').textContent = '$' + Math.abs(difference).toFixed(2);
+            
+            // Update Spotify shame section
+            if (directRevenue > streamingRevenue && dedicatedFans > 0) {
+                document.getElementById('spotsRemaining').textContent = Math.max(1, 100 - Math.floor(Math.random() * 20));
+                document.getElementById('streamsNeeded').textContent = streamsNeeded.toLocaleString();
+                document.getElementById('fansNeeded').textContent = Math.round(dedicatedFans * 0.2);
+                document.getElementById('spotifyShame').style.display = 'block';
+            }
+            
+            // Store calculation for sharing
+            lastCalculation = {
+                streamingRevenue,
+                directRevenue,
+                difference: Math.abs(difference),
+                monthlyStreams,
+                dedicatedFans,
+                albumPrice
+            };
+            
+            // Show results with animation
+            const results = document.getElementById('results');
+            results.classList.add('show');
+            results.scrollIntoView({ behavior: 'smooth' });
+            
+            // Update counter randomly
+            const spotsElement = document.getElementById('spotsRemaining');
+            let currentSpots = parseInt(spotsElement.textContent);
+            if (Math.random() > 0.8) {
+                spotsElement.textContent = Math.max(1, currentSpots - 1);
+            }
+        }
+        
+        function shareToTwitter() {
+            if (!lastCalculation) return;
+            
+            const text = `🤯 SHOCKING: I could earn $${lastCalculation.difference.toFixed(2)} MORE per month selling directly to fans vs streaming!\n\nStreaming: $${lastCalculation.streamingRevenue.toFixed(2)}\nDirect sales: $${lastCalculation.directRevenue.toFixed(2)}\n\nWhy are we accepting pennies? #IndependentArtistManifesto #NotALabel #ArtistFirst\n\nCalculate your worth:`;
+            
+            const url = 'https://not-a-label.art/calculator';
+            window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}`);
+        }
+        
+        function shareToFacebook() {
+            const url = 'https://not-a-label.art/calculator';
+            window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`);
+        }
+        
+        function shareToInstagram() {
+            if (!lastCalculation) return;
+            
+            const text = `Story idea: Post your results and tag @notalabelmusic!\n\n"I could earn $${lastCalculation.difference.toFixed(2)} MORE selling direct vs streaming! Who else is ready to break free from the broken system? 🔥 #IndependentArtistManifesto #NotALabel"`;
+            
+            alert(text);
+        }
+        
+        function joinPlatform() {
+            window.open('https://not-a-label.art', '_blank');
+        }
+        
+        function openManifesto() {
+            window.open('https://not-a-label.art/manifesto', '_blank');
+        }
+        
+        // Auto-focus first input
+        document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('monthlyStreams').focus();
+            
+            // Simulate real-time spots remaining
+            setInterval(() => {
+                const spotsElement = document.getElementById('spotsRemaining');
+                if (spotsElement && Math.random() > 0.95) {
+                    let current = parseInt(spotsElement.textContent);
+                    if (current > 1) {
+                        spotsElement.textContent = current - 1;
+                        
+                        // Flash effect
+                        spotsElement.style.color = '#ff6b6b';
+                        setTimeout(() => {
+                            spotsElement.style.color = '';
+                        }, 1000);
+                    }
+                }
+            }, 30000);
+        });
+        
+        // Enter key calculation
+        document.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                calculateWorth();
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,707 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Not a Label - Platform Admin</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background: #f5f7fa;
+            color: #2d3748;
+            line-height: 1.6;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px 0;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+        }
+        
+        .status-badge {
+            background: rgba(255,255,255,0.2);
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .metric-card {
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            transition: transform 0.2s;
+        }
+        
+        .metric-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+        
+        .metric-value {
+            font-size: 36px;
+            font-weight: bold;
+            color: #667eea;
+            margin: 10px 0;
+        }
+        
+        .metric-label {
+            color: #718096;
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .tabs {
+            display: flex;
+            background: white;
+            border-radius: 10px;
+            padding: 5px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+        
+        .tab {
+            flex: 1;
+            padding: 12px 20px;
+            border: none;
+            background: none;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 500;
+            color: #718096;
+            border-radius: 5px;
+            transition: all 0.3s;
+        }
+        
+        .tab.active {
+            background: #667eea;
+            color: white;
+        }
+        
+        .tab-content {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #4a5568;
+        }
+        
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #e2e8f0;
+            border-radius: 5px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+        
+        .form-group input:focus,
+        .form-group textarea:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        .btn {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 5px;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        
+        .btn:hover {
+            background: #5a67d8;
+        }
+        
+        .btn-secondary {
+            background: #718096;
+        }
+        
+        .btn-secondary:hover {
+            background: #4a5568;
+        }
+        
+        .result-box {
+            background: #f0f4f8;
+            padding: 20px;
+            border-radius: 5px;
+            margin-top: 20px;
+            display: none;
+        }
+        
+        .result-box.success {
+            background: #e6fffa;
+            border: 1px solid #81e6d9;
+        }
+        
+        .result-box.error {
+            background: #fed7e2;
+            border: 1px solid #fc8181;
+        }
+        
+        .beta-status {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .beta-stat {
+            background: #f7fafc;
+            padding: 15px;
+            border-radius: 5px;
+            text-align: center;
+        }
+        
+        .beta-stat-value {
+            font-size: 24px;
+            font-weight: bold;
+            color: #4a5568;
+        }
+        
+        .beta-stat-label {
+            font-size: 12px;
+            color: #718096;
+            text-transform: uppercase;
+        }
+        
+        .revenue-tiers {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .tier-card {
+            background: #f7fafc;
+            padding: 20px;
+            border-radius: 5px;
+            border: 2px solid transparent;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .tier-card:hover {
+            border-color: #667eea;
+        }
+        
+        .tier-card.recommended {
+            border-color: #48bb78;
+            background: #e6fffa;
+        }
+        
+        .loader {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255,255,255,.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s ease-in-out infinite;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        .artist-list {
+            margin-top: 20px;
+        }
+        
+        .artist-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px;
+            background: #f7fafc;
+            margin-bottom: 10px;
+            border-radius: 5px;
+        }
+        
+        .payment-history {
+            margin-top: 20px;
+        }
+        
+        .payment-item {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr 1fr;
+            gap: 10px;
+            padding: 15px;
+            background: #f7fafc;
+            margin-bottom: 10px;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+        
+        .payment-item:first-child {
+            background: #e2e8f0;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="header-content">
+            <div class="logo">Not a Label - Admin Dashboard</div>
+            <div class="status-badge" id="server-status">Checking server...</div>
+        </div>
+    </div>
+
+    <div class="container">
+        <!-- Metrics Dashboard -->
+        <div class="metrics-grid" id="metrics-grid">
+            <div class="metric-card">
+                <div class="metric-label">Total Artists</div>
+                <div class="metric-value" id="total-artists">-</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-label">Platform Revenue</div>
+                <div class="metric-value" id="total-revenue">-</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-label">Beta Slots Available</div>
+                <div class="metric-value" id="beta-slots">-</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-label">Platform Health</div>
+                <div class="metric-value" id="platform-health">-</div>
+            </div>
+        </div>
+
+        <!-- Navigation Tabs -->
+        <div class="tabs">
+            <button class="tab active" onclick="showTab('beta')">Beta Program</button>
+            <button class="tab" onclick="showTab('payments')">Payments</button>
+            <button class="tab" onclick="showTab('referrals')">Referrals</button>
+            <button class="tab" onclick="showTab('revenue')">Revenue Calculator</button>
+        </div>
+
+        <!-- Beta Program Tab -->
+        <div id="beta-tab" class="tab-content active">
+            <h2>Beta Artist Program</h2>
+            
+            <div class="beta-status" id="beta-status">
+                <div class="beta-stat">
+                    <div class="beta-stat-value" id="beta-used">-</div>
+                    <div class="beta-stat-label">Artists Joined</div>
+                </div>
+                <div class="beta-stat">
+                    <div class="beta-stat-value" id="beta-available">-</div>
+                    <div class="beta-stat-label">Spots Available</div>
+                </div>
+                <div class="beta-stat">
+                    <div class="beta-stat-value" id="beta-percent">-</div>
+                    <div class="beta-stat-label">% Full</div>
+                </div>
+            </div>
+
+            <h3 style="margin-top: 30px;">Send Beta Invitation</h3>
+            <form id="beta-invite-form">
+                <div class="form-group">
+                    <label>Artist Name</label>
+                    <input type="text" id="artist-name" required placeholder="e.g., Sarah Chen">
+                </div>
+                <div class="form-group">
+                    <label>Email Address</label>
+                    <input type="email" id="artist-email" required placeholder="artist@example.com">
+                </div>
+                <div class="form-group">
+                    <label>Personal Message (Optional)</label>
+                    <textarea id="personal-message" rows="3" placeholder="Add a personal welcome message..."></textarea>
+                </div>
+                <button type="submit" class="btn">Send Invitation</button>
+            </form>
+
+            <div id="beta-result" class="result-box"></div>
+
+            <h3 style="margin-top: 30px;">Recent Artists</h3>
+            <div id="recent-artists" class="artist-list"></div>
+        </div>
+
+        <!-- Payments Tab -->
+        <div id="payments-tab" class="tab-content">
+            <h2>Payment Testing</h2>
+            
+            <form id="payment-form">
+                <div class="form-group">
+                    <label>Amount (in cents)</label>
+                    <input type="number" id="payment-amount" required value="999" min="50">
+                </div>
+                <div class="form-group">
+                    <label>Payment Type</label>
+                    <select id="payment-type" required>
+                        <option value="marketplace">Marketplace (15% fee)</option>
+                        <option value="subscription">Subscription (20% fee)</option>
+                        <option value="nft">NFT Minting ($25 fee)</option>
+                        <option value="ai_service">AI Service ($2.50-$5 fee)</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Description</label>
+                    <input type="text" id="payment-description" required placeholder="e.g., Track purchase - Midnight Dreams">
+                </div>
+                <button type="submit" class="btn">Simulate Payment</button>
+            </form>
+
+            <div id="payment-result" class="result-box"></div>
+
+            <h3 style="margin-top: 30px;">Recent Payments</h3>
+            <div id="payment-history" class="payment-history">
+                <div class="payment-item">
+                    <div>Payment ID</div>
+                    <div>Amount</div>
+                    <div>Platform Fee</div>
+                    <div>Type</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Referrals Tab -->
+        <div id="referrals-tab" class="tab-content">
+            <h2>Referral System</h2>
+            
+            <form id="referral-form">
+                <div class="form-group">
+                    <label>Artist Name</label>
+                    <input type="text" id="referral-artist-name" required placeholder="Artist name for referral code">
+                </div>
+                <button type="submit" class="btn">Generate Referral Code</button>
+            </form>
+
+            <div id="referral-result" class="result-box"></div>
+
+            <h3 style="margin-top: 30px;">Referral Program Details</h3>
+            <div class="beta-status">
+                <div class="beta-stat">
+                    <div class="beta-stat-value">5%</div>
+                    <div class="beta-stat-label">Commission Rate</div>
+                </div>
+                <div class="beta-stat">
+                    <div class="beta-stat-value">$50</div>
+                    <div class="beta-stat-label">Per Signup Bonus</div>
+                </div>
+                <div class="beta-stat">
+                    <div class="beta-stat-value">$2,000</div>
+                    <div class="beta-stat-label">Max Tier Bonus</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Revenue Calculator Tab -->
+        <div id="revenue-tab" class="tab-content">
+            <h2>Founder Revenue Calculator</h2>
+            
+            <form id="revenue-form">
+                <div class="form-group">
+                    <label>Projected Monthly Revenue</label>
+                    <input type="number" id="revenue-amount" required value="5000" min="1000" step="1000">
+                </div>
+                <button type="submit" class="btn">Calculate Safe Withdrawal</button>
+            </form>
+
+            <div id="revenue-result" class="result-box"></div>
+
+            <h3 style="margin-top: 30px;">Withdrawal Recommendations</h3>
+            <div id="revenue-tiers" class="revenue-tiers"></div>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = 'http://159.89.247.208/api';
+        
+        // Initialize dashboard
+        document.addEventListener('DOMContentLoaded', () => {
+            checkServerStatus();
+            loadMetrics();
+            loadBetaStatus();
+            
+            // Refresh metrics every 30 seconds
+            setInterval(() => {
+                checkServerStatus();
+                loadMetrics();
+            }, 30000);
+        });
+
+        // Check server status
+        async function checkServerStatus() {
+            try {
+                const response = await fetch(`${API_URL}/health`);
+                const data = await response.json();
+                document.getElementById('server-status').textContent = '🟢 Server Online';
+                document.getElementById('server-status').style.background = 'rgba(72, 187, 120, 0.2)';
+            } catch (error) {
+                document.getElementById('server-status').textContent = '🔴 Server Offline';
+                document.getElementById('server-status').style.background = 'rgba(245, 101, 101, 0.2)';
+            }
+        }
+
+        // Load platform metrics
+        async function loadMetrics() {
+            try {
+                const response = await fetch(`${API_URL}/platform-metrics`);
+                const data = await response.json();
+                
+                document.getElementById('total-artists').textContent = data.users.total.toLocaleString();
+                document.getElementById('total-revenue').textContent = '$' + data.revenue.total.toLocaleString();
+                document.getElementById('platform-health').textContent = data.platform_health + '%';
+            } catch (error) {
+                console.error('Failed to load metrics:', error);
+            }
+        }
+
+        // Load beta status
+        async function loadBetaStatus() {
+            try {
+                const response = await fetch(`${API_URL}/beta/status`);
+                const data = await response.json();
+                
+                document.getElementById('beta-slots').textContent = data.slotsAvailable;
+                document.getElementById('beta-used').textContent = data.slotsUsed;
+                document.getElementById('beta-available').textContent = data.slotsAvailable;
+                document.getElementById('beta-percent').textContent = data.percentFull + '%';
+                
+                // Display recent artists
+                const artistsHtml = data.recentArtists.map(artist => `
+                    <div class="artist-item">
+                        <div>${artist.name}</div>
+                        <div>Invited by: ${artist.invitedBy}</div>
+                    </div>
+                `).join('');
+                document.getElementById('recent-artists').innerHTML = artistsHtml;
+            } catch (error) {
+                console.error('Failed to load beta status:', error);
+            }
+        }
+
+        // Tab switching
+        function showTab(tabName) {
+            // Hide all tabs
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // Show selected tab
+            document.getElementById(`${tabName}-tab`).classList.add('active');
+            event.target.classList.add('active');
+        }
+
+        // Beta invitation form
+        document.getElementById('beta-invite-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const data = {
+                artistName: document.getElementById('artist-name').value,
+                email: document.getElementById('artist-email').value,
+                personalMessage: document.getElementById('personal-message').value || undefined,
+                invitedBy: 'Platform Admin'
+            };
+            
+            try {
+                const response = await fetch(`${API_URL}/beta/invite`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+                
+                const result = await response.json();
+                const resultBox = document.getElementById('beta-result');
+                
+                if (response.ok) {
+                    resultBox.className = 'result-box success';
+                    resultBox.innerHTML = `
+                        <h4>✅ Invitation Sent!</h4>
+                        <p>Invite Code: <strong>${result.inviteCode || 'BETA-' + Date.now()}</strong></p>
+                        <p>Invite URL: https://not-a-label.art/join/${result.inviteCode || 'BETA-' + Date.now()}</p>
+                    `;
+                    resultBox.style.display = 'block';
+                    
+                    // Reset form
+                    e.target.reset();
+                    loadBetaStatus();
+                } else {
+                    throw new Error(result.error || 'Failed to send invitation');
+                }
+            } catch (error) {
+                const resultBox = document.getElementById('beta-result');
+                resultBox.className = 'result-box error';
+                resultBox.innerHTML = `<h4>❌ Error</h4><p>${error.message}</p>`;
+                resultBox.style.display = 'block';
+            }
+        });
+
+        // Payment simulation form
+        document.getElementById('payment-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const data = {
+                amount: parseInt(document.getElementById('payment-amount').value),
+                type: document.getElementById('payment-type').value,
+                description: document.getElementById('payment-description').value
+            };
+            
+            try {
+                const response = await fetch(`${API_URL}/payments/simulate-payment`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+                
+                const result = await response.json();
+                const resultBox = document.getElementById('payment-result');
+                
+                if (response.ok) {
+                    resultBox.className = 'result-box success';
+                    resultBox.innerHTML = `
+                        <h4>✅ Payment Processed!</h4>
+                        <p>Payment ID: <strong>${result.simulated_payment_id}</strong></p>
+                        <p>Amount: $${(result.original_amount / 100).toFixed(2)}</p>
+                        <p>Platform Fee: $${(result.platform_fee / 100).toFixed(2)} (${result.fee_percentage})</p>
+                        <p>Total Revenue: $${(result.total_business_revenue / 100).toFixed(2)}</p>
+                    `;
+                    resultBox.style.display = 'block';
+                    
+                    // Add to payment history
+                    addPaymentToHistory(result);
+                    loadMetrics();
+                } else {
+                    throw new Error(result.error || 'Payment failed');
+                }
+            } catch (error) {
+                const resultBox = document.getElementById('payment-result');
+                resultBox.className = 'result-box error';
+                resultBox.innerHTML = `<h4>❌ Error</h4><p>${error.message}</p>`;
+                resultBox.style.display = 'block';
+            }
+        });
+
+        // Add payment to history display
+        function addPaymentToHistory(payment) {
+            const historyDiv = document.getElementById('payment-history');
+            const newPayment = document.createElement('div');
+            newPayment.className = 'payment-item';
+            newPayment.innerHTML = `
+                <div>${payment.simulated_payment_id}</div>
+                <div>$${(payment.original_amount / 100).toFixed(2)}</div>
+                <div>$${(payment.platform_fee / 100).toFixed(2)}</div>
+                <div>${payment.type || 'marketplace'}</div>
+            `;
+            historyDiv.insertBefore(newPayment, historyDiv.children[1]);
+        }
+
+        // Referral form
+        document.getElementById('referral-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const artistName = document.getElementById('referral-artist-name').value;
+            const referralCode = artistName.toLowerCase().replace(/\s+/g, '-') + '-' + Math.random().toString(36).substr(2, 6);
+            
+            const resultBox = document.getElementById('referral-result');
+            resultBox.className = 'result-box success';
+            resultBox.innerHTML = `
+                <h4>✅ Referral Code Generated!</h4>
+                <p>Artist: <strong>${artistName}</strong></p>
+                <p>Referral Code: <strong>${referralCode}</strong></p>
+                <p>Share URL: <strong>https://not-a-label.art/join?ref=${referralCode}</strong></p>
+                <p>Commission: 5% of all referred payments + tier bonuses</p>
+            `;
+            resultBox.style.display = 'block';
+        });
+
+        // Revenue calculator form
+        document.getElementById('revenue-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const amount = document.getElementById('revenue-amount').value;
+            
+            try {
+                const response = await fetch(`${API_URL}/founder/revenue-calculator?amount=${amount}`);
+                const result = await response.json();
+                
+                const resultBox = document.getElementById('revenue-result');
+                resultBox.className = 'result-box success';
+                resultBox.innerHTML = `
+                    <h4>✅ Revenue Analysis</h4>
+                    <p>Total Business Revenue: <strong>$${result.total_business_revenue.toLocaleString()}</strong></p>
+                    <p>Recommended Withdrawal: <strong>$${result.recommended_withdrawal.toLocaleString()}</strong></p>
+                    <p>Risk Level: <strong>${result.risk_level}</strong></p>
+                `;
+                resultBox.style.display = 'block';
+                
+                // Display tier recommendations
+                const tiersHtml = Object.entries(result.safe_withdrawal_recommendations).map(([tier, amount]) => `
+                    <div class="tier-card ${tier === 'conservative' ? 'recommended' : ''}">
+                        <h4>${tier.charAt(0).toUpperCase() + tier.slice(1)}</h4>
+                        <div style="font-size: 24px; font-weight: bold; color: #4a5568; margin: 10px 0;">
+                            $${amount.toLocaleString()}
+                        </div>
+                        <p style="font-size: 12px; color: #718096;">
+                            ${result.advice[tier]}
+                        </p>
+                    </div>
+                `).join('');
+                
+                document.getElementById('revenue-tiers').innerHTML = tiersHtml;
+            } catch (error) {
+                const resultBox = document.getElementById('revenue-result');
+                resultBox.className = 'result-box error';
+                resultBox.innerHTML = `<h4>❌ Error</h4><p>${error.message}</p>`;
+                resultBox.style.display = 'block';
+            }
+        });
+    </script>
+</body>
+</html>

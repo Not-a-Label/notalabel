@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contact Us - Not a Label</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+        
+        .contact-card {
+            background: white;
+            border-radius: 15px;
+            padding: 40px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        
+        .logo {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+        
+        .tagline {
+            color: #666;
+            font-size: 1.1rem;
+        }
+        
+        .contact-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+        
+        .contact-section {
+            padding: 20px;
+            border-left: 4px solid #667eea;
+            background: #f8f9ff;
+            border-radius: 8px;
+        }
+        
+        .contact-section h3 {
+            color: #667eea;
+            margin-bottom: 15px;
+            font-size: 1.3rem;
+        }
+        
+        .contact-item {
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .contact-item strong {
+            min-width: 80px;
+            color: #333;
+        }
+        
+        .contact-item a {
+            color: #667eea;
+            text-decoration: none;
+        }
+        
+        .contact-item a:hover {
+            text-decoration: underline;
+        }
+        
+        .support-hours {
+            background: #e8f2ff;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 30px;
+            text-align: center;
+        }
+        
+        .support-hours h3 {
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+        
+        .business-info {
+            background: #f0f8ff;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 20px;
+        }
+        
+        .business-info h3 {
+            color: #667eea;
+            margin-bottom: 15px;
+        }
+        
+        .back-link {
+            display: inline-block;
+            background: #667eea;
+            color: white;
+            padding: 12px 24px;
+            border-radius: 6px;
+            text-decoration: none;
+            margin-top: 20px;
+            transition: background 0.3s;
+        }
+        
+        .back-link:hover {
+            background: #5a6fd8;
+        }
+        
+        @media (max-width: 600px) {
+            .container {
+                padding: 20px 10px;
+            }
+            
+            .contact-card {
+                padding: 20px;
+            }
+            
+            .logo {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="contact-card">
+            <div class="header">
+                <div class="logo">Not a Label</div>
+                <div class="tagline">Where independent artists keep 100% of their revenue</div>
+            </div>
+            
+            <div class="contact-grid">
+                <div class="contact-section">
+                    <h3>🎵 Artist Support</h3>
+                    <div class="contact-item">
+                        <strong>Email:</strong>
+                        <a href="mailto:artists@not-a-label.art">artists@not-a-label.art</a>
+                    </div>
+                    <div class="contact-item">
+                        <strong>For:</strong>
+                        Account issues, payouts, uploads
+                    </div>
+                </div>
+                
+                <div class="contact-section">
+                    <h3>👥 Fan Support</h3>
+                    <div class="contact-item">
+                        <strong>Email:</strong>
+                        <a href="mailto:fans@not-a-label.art">fans@not-a-label.art</a>
+                    </div>
+                    <div class="contact-item">
+                        <strong>For:</strong>
+                        Purchases, downloads, refunds
+                    </div>
+                </div>
+                
+                <div class="contact-section">
+                    <h3>💼 General Business</h3>
+                    <div class="contact-item">
+                        <strong>Email:</strong>
+                        <a href="mailto:jason@not-a-label.art">jason@not-a-label.art</a>
+                    </div>
+                    <div class="contact-item">
+                        <strong>For:</strong>
+                        Partnerships, press, feedback
+                    </div>
+                </div>
+                
+                <div class="contact-section">
+                    <h3>⚖️ Legal & Privacy</h3>
+                    <div class="contact-item">
+                        <strong>Email:</strong>
+                        <a href="mailto:legal@not-a-label.art">legal@not-a-label.art</a>
+                    </div>
+                    <div class="contact-item">
+                        <strong>For:</strong>
+                        DMCA, privacy requests, legal matters
+                    </div>
+                </div>
+            </div>
+            
+            <div class="support-hours">
+                <h3>📞 Support Hours</h3>
+                <p><strong>Monday - Friday:</strong> 9:00 AM - 6:00 PM EST</p>
+                <p><strong>Response Time:</strong> Within 24 hours (usually much faster)</p>
+                <p><strong>Emergency Issues:</strong> Mark email as "URGENT" for priority handling</p>
+            </div>
+            
+            <div class="business-info">
+                <h3>🏢 Business Information</h3>
+                <div class="contact-item">
+                    <strong>Company:</strong>
+                    Not a Label LLC
+                </div>
+                <div class="contact-item">
+                    <strong>Website:</strong>
+                    <a href="https://not-a-label.art">https://not-a-label.art</a>
+                </div>
+                <div class="contact-item">
+                    <strong>Platform:</strong>
+                    Direct-to-fan music marketplace
+                </div>
+                <div class="contact-item">
+                    <strong>Founded:</strong>
+                    2024
+                </div>
+            </div>
+            
+            <div style="text-align: center; margin-top: 30px;">
+                <a href="/" class="back-link">← Back to Platform</a>
+                <a href="/admin" class="back-link">Platform Admin</a>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

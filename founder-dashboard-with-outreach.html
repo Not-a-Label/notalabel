@@ -1,0 +1,887 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Not a Label - Founder Dashboard</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background: #f5f7fa;
+            color: #2d3748;
+            line-height: 1.6;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px 0;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .header-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+        }
+        
+        .founder-badge {
+            background: rgba(255,215,0,0.3);
+            border: 1px solid rgba(255,215,0,0.5);
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .metrics-section {
+            background: white;
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+        }
+        
+        .section-title {
+            font-size: 20px;
+            font-weight: bold;
+            margin-bottom: 20px;
+            color: #1a202c;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 16px;
+        }
+        
+        .metric-card {
+            background: #f8fafc;
+            padding: 16px;
+            border-radius: 8px;
+            text-align: center;
+        }
+        
+        .metric-value {
+            font-size: 32px;
+            font-weight: bold;
+            color: #667eea;
+            margin-bottom: 4px;
+        }
+        
+        .metric-label {
+            font-size: 14px;
+            color: #64748b;
+        }
+        
+        /* Outreach System Styles */
+        .outreach-section {
+            grid-column: 1 / -1;
+            background: white;
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+            border: 2px solid #ffd700;
+        }
+        
+        .outreach-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 24px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        
+        .tab-button {
+            padding: 12px 20px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            font-weight: 500;
+            color: #64748b;
+            transition: all 0.3s;
+        }
+        
+        .tab-button.active {
+            color: #667eea;
+            border-bottom-color: #667eea;
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        .artist-search {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .search-form {
+            background: #f8fafc;
+            padding: 20px;
+            border-radius: 8px;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        .form-label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+            color: #374151;
+        }
+        
+        .form-input, .form-select {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+        
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+        
+        .btn-primary {
+            background: #667eea;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: #5a6fd8;
+        }
+        
+        .btn-secondary {
+            background: #e2e8f0;
+            color: #374151;
+        }
+        
+        .artist-results {
+            background: #f8fafc;
+            border-radius: 8px;
+            padding: 20px;
+        }
+        
+        .artist-card {
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .artist-info {
+            flex: 1;
+        }
+        
+        .artist-name {
+            font-weight: bold;
+            color: #1a202c;
+            margin-bottom: 4px;
+        }
+        
+        .artist-details {
+            font-size: 14px;
+            color: #64748b;
+        }
+        
+        .artist-actions {
+            display: flex;
+            gap: 8px;
+        }
+        
+        .btn-small {
+            padding: 6px 12px;
+            font-size: 12px;
+        }
+        
+        .outreach-queue {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        
+        .queue-section {
+            background: #f8fafc;
+            border-radius: 8px;
+            padding: 16px;
+        }
+        
+        .queue-title {
+            font-weight: bold;
+            margin-bottom: 12px;
+            color: #374151;
+        }
+        
+        .queue-item {
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+            padding: 12px;
+            margin-bottom: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .email-composer {
+            background: #f8fafc;
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 20px;
+        }
+        
+        .textarea {
+            width: 100%;
+            min-height: 200px;
+            padding: 12px;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            font-family: inherit;
+            resize: vertical;
+        }
+        
+        .template-buttons {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        
+        .btn-template {
+            padding: 8px 16px;
+            background: #e2e8f0;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+        
+        .progress-bar {
+            background: #e2e8f0;
+            border-radius: 10px;
+            height: 8px;
+            margin: 10px 0;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            background: #10b981;
+            height: 100%;
+            transition: width 0.3s;
+        }
+        
+        .founding-artist-badge {
+            background: linear-gradient(45deg, #ffd700, #ffed4e);
+            color: #744210;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 10px;
+            font-weight: bold;
+            margin-left: 8px;
+        }
+        
+        .status-indicator {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            display: inline-block;
+            margin-right: 6px;
+        }
+        
+        .status-pending { background: #fbbf24; }
+        .status-sent { background: #3b82f6; }
+        .status-responded { background: #10b981; }
+        .status-converted { background: #8b5cf6; }
+        
+        @media (max-width: 768px) {
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .artist-search {
+                grid-template-columns: 1fr;
+            }
+            
+            .outreach-queue {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="header-content">
+            <div class="logo">🎵 Not a Label</div>
+            <div class="founder-badge">
+                👑 Founder Dashboard
+                <span class="founding-artist-badge">BETA</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="dashboard-grid">
+            <!-- Platform Metrics -->
+            <div class="metrics-section">
+                <div class="section-title">
+                    📊 Platform Metrics
+                </div>
+                <div class="metrics-grid">
+                    <div class="metric-card">
+                        <div class="metric-value" id="totalArtists">23</div>
+                        <div class="metric-label">Total Artists</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-value" id="foundingArtists">7</div>
+                        <div class="metric-label">Founding Artists</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-value" id="totalRevenue">$2,847</div>
+                        <div class="metric-label">Artist Revenue</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-value" id="platformFees">$427</div>
+                        <div class="metric-label">Platform Fees</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Outreach Progress -->
+            <div class="metrics-section">
+                <div class="section-title">
+                    🎯 Outreach Progress
+                </div>
+                <div class="metrics-grid">
+                    <div class="metric-card">
+                        <div class="metric-value" id="targetGoal">100</div>
+                        <div class="metric-label">Founding Goal</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-value" id="contacted">31</div>
+                        <div class="metric-label">Artists Contacted</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-value" id="responded">12</div>
+                        <div class="metric-label">Responses</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-value" id="conversionRate">38%</div>
+                        <div class="metric-label">Response Rate</div>
+                    </div>
+                </div>
+                <div class="progress-bar">
+                    <div class="progress-fill" style="width: 31%"></div>
+                </div>
+                <div style="text-align: center; margin-top: 8px; font-size: 14px; color: #64748b;">
+                    31/100 founding artists recruited
+                </div>
+            </div>
+        </div>
+
+        <!-- Automated Outreach System -->
+        <div class="outreach-section">
+            <div class="section-title">
+                🚀 Automated Artist Outreach System
+                <span style="font-size: 14px; background: #dcfce7; color: #166534; padding: 4px 8px; border-radius: 4px; margin-left: 10px;">
+                    META: Using platform to grow platform
+                </span>
+            </div>
+
+            <div class="outreach-tabs">
+                <button class="tab-button active" onclick="showTab('discover')">🔍 Discover Artists</button>
+                <button class="tab-button" onclick="showTab('outreach')">📧 Outreach Queue</button>
+                <button class="tab-button" onclick="showTab('analytics')">📈 Campaign Analytics</button>
+                <button class="tab-button" onclick="showTab('templates')">📝 Email Templates</button>
+            </div>
+
+            <!-- Discovery Tab -->
+            <div class="tab-content active" id="discover">
+                <div class="artist-search">
+                    <div class="search-form">
+                        <h3 style="margin-bottom: 15px; color: #374151;">🎵 Artist Discovery</h3>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Search Platform</label>
+                            <select class="form-select" id="searchPlatform">
+                                <option value="instagram">Instagram</option>
+                                <option value="tiktok">TikTok</option>
+                                <option value="bandcamp">Bandcamp</option>
+                                <option value="soundcloud">SoundCloud</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Genre</label>
+                            <select class="form-select" id="genreFilter">
+                                <option value="">All Genres</option>
+                                <option value="indie-pop">Indie Pop</option>
+                                <option value="hip-hop">Hip-Hop</option>
+                                <option value="electronic">Electronic</option>
+                                <option value="folk">Folk</option>
+                                <option value="rock">Rock</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Follower Range</label>
+                            <select class="form-select" id="followerRange">
+                                <option value="1k-5k">1K - 5K followers</option>
+                                <option value="5k-20k">5K - 20K followers</option>
+                                <option value="20k-50k">20K - 50K followers</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Keywords/Hashtags</label>
+                            <input type="text" class="form-input" id="searchKeywords" placeholder="#independentartist #newmusic">
+                        </div>
+                        
+                        <button class="btn btn-primary" onclick="searchArtists()">🔍 Search Artists</button>
+                    </div>
+                    
+                    <div class="artist-results">
+                        <h3 style="margin-bottom: 15px; color: #374151;">📋 Discovery Results</h3>
+                        <div id="artistResults">
+                            <!-- Mock Results -->
+                            <div class="artist-card">
+                                <div class="artist-info">
+                                    <div class="artist-name">Maya Chen (@mayabeats)</div>
+                                    <div class="artist-details">Indie Electronic • 12.5K followers • Last post: 2 days ago</div>
+                                    <div class="artist-details">Recent: "Working on my new EP 🎧" • Engagement: 8.4%</div>
+                                </div>
+                                <div class="artist-actions">
+                                    <button class="btn btn-secondary btn-small" onclick="viewProfile('maya')">👀 View</button>
+                                    <button class="btn btn-primary btn-small" onclick="addToQueue('maya')">➕ Add to Queue</button>
+                                </div>
+                            </div>
+                            
+                            <div class="artist-card">
+                                <div class="artist-info">
+                                    <div class="artist-name">Alex Rivers (@alexriversmusic)</div>
+                                    <div class="artist-details">Folk Pop • 8.2K followers • Last post: 1 day ago</div>
+                                    <div class="artist-details">Recent: "Streaming payouts are brutal 😤" • Engagement: 12.1%</div>
+                                </div>
+                                <div class="artist-actions">
+                                    <button class="btn btn-secondary btn-small" onclick="viewProfile('alex')">👀 View</button>
+                                    <button class="btn btn-primary btn-small" onclick="addToQueue('alex')">➕ Add to Queue</button>
+                                </div>
+                            </div>
+                            
+                            <div class="artist-card">
+                                <div class="artist-info">
+                                    <div class="artist-name">Zoe Martinez (@zoebeats)</div>
+                                    <div class="artist-details">Hip-Hop • 15.8K followers • Last post: 4 hours ago</div>
+                                    <div class="artist-details">Recent: "Independent means independent 💪" • Engagement: 6.8%</div>
+                                </div>
+                                <div class="artist-actions">
+                                    <button class="btn btn-secondary btn-small" onclick="viewProfile('zoe')">👀 View</button>
+                                    <button class="btn btn-primary btn-small" onclick="addToQueue('zoe')">➕ Add to Queue</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Outreach Tab -->
+            <div class="tab-content" id="outreach">
+                <div class="outreach-queue">
+                    <div class="queue-section">
+                        <div class="queue-title">📮 Outreach Queue (8)</div>
+                        
+                        <div class="queue-item">
+                            <div>
+                                <div style="font-weight: 500;">Maya Chen</div>
+                                <div style="font-size: 12px; color: #64748b;">
+                                    <span class="status-indicator status-pending"></span>
+                                    Ready to send • Template: Personal
+                                </div>
+                            </div>
+                            <button class="btn btn-primary btn-small" onclick="sendEmail('maya')">📧 Send</button>
+                        </div>
+                        
+                        <div class="queue-item">
+                            <div>
+                                <div style="font-weight: 500;">Alex Rivers</div>
+                                <div style="font-size: 12px; color: #64748b;">
+                                    <span class="status-indicator status-sent"></span>
+                                    Sent 2 days ago • Template: Value-focused
+                                </div>
+                            </div>
+                            <button class="btn btn-secondary btn-small" onclick="followUp('alex')">🔄 Follow-up</button>
+                        </div>
+                        
+                        <div class="queue-item">
+                            <div>
+                                <div style="font-weight: 500;">Jamie Torres</div>
+                                <div style="font-size: 12px; color: #64748b;">
+                                    <span class="status-indicator status-responded"></span>
+                                    Responded: "Tell me more!" • 1 day ago
+                                </div>
+                            </div>
+                            <button class="btn btn-primary btn-small" onclick="scheduleCall('jamie')">📞 Schedule Call</button>
+                        </div>
+                    </div>
+                    
+                    <div class="queue-section">
+                        <div class="queue-title">✅ Converted Artists (7)</div>
+                        
+                        <div class="queue-item">
+                            <div>
+                                <div style="font-weight: 500;">Sam Rodriguez</div>
+                                <div style="font-size: 12px; color: #64748b;">
+                                    <span class="status-indicator status-converted"></span>
+                                    Joined as Founding Artist • 3 days ago
+                                </div>
+                            </div>
+                            <span class="founding-artist-badge">FOUNDING</span>
+                        </div>
+                        
+                        <div class="queue-item">
+                            <div>
+                                <div style="font-weight: 500;">Luna Park</div>
+                                <div style="font-size: 12px; color: #64748b;">
+                                    <span class="status-indicator status-converted"></span>
+                                    Joined as Founding Artist • 5 days ago
+                                </div>
+                            </div>
+                            <span class="founding-artist-badge">FOUNDING</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Email Composer -->
+                <div class="email-composer">
+                    <h3 style="margin-bottom: 15px; color: #374151;">✉️ Email Composer</h3>
+                    
+                    <div class="template-buttons">
+                        <button class="btn-template" onclick="loadTemplate('personal')">Personal Introduction</button>
+                        <button class="btn-template" onclick="loadTemplate('value')">Value-Focused Pitch</button>
+                        <button class="btn-template" onclick="loadTemplate('followup')">Follow-up</button>
+                        <button class="btn-template" onclick="loadTemplate('social')">Social Media DM</button>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">To: Artist Email</label>
+                        <input type="email" class="form-input" id="recipientEmail" placeholder="artist@example.com">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Subject Line</label>
+                        <input type="text" class="form-input" id="emailSubject" placeholder="You're invited to shape the future of independent music">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Email Content</label>
+                        <textarea class="textarea" id="emailContent" placeholder="Start typing your personalized message..."></textarea>
+                    </div>
+                    
+                    <div style="display: flex; gap: 10px;">
+                        <button class="btn btn-primary" onclick="sendEmail()">📧 Send Email</button>
+                        <button class="btn btn-secondary" onclick="saveAsDraft()">💾 Save as Draft</button>
+                        <button class="btn btn-secondary" onclick="scheduleEmail()">⏰ Schedule Send</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Analytics Tab -->
+            <div class="tab-content" id="analytics">
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                    <div style="background: #f8fafc; padding: 20px; border-radius: 8px;">
+                        <h3 style="margin-bottom: 15px; color: #374151;">📊 Outreach Analytics</h3>
+                        
+                        <div class="metrics-grid">
+                            <div class="metric-card">
+                                <div class="metric-value">31</div>
+                                <div class="metric-label">Emails Sent</div>
+                            </div>
+                            <div class="metric-card">
+                                <div class="metric-value">12</div>
+                                <div class="metric-label">Responses</div>
+                            </div>
+                            <div class="metric-card">
+                                <div class="metric-value">38%</div>
+                                <div class="metric-label">Response Rate</div>
+                            </div>
+                            <div class="metric-card">
+                                <div class="metric-value">7</div>
+                                <div class="metric-label">Conversions</div>
+                            </div>
+                        </div>
+                        
+                        <div style="margin-top: 20px;">
+                            <div style="font-weight: 500; margin-bottom: 8px;">Best Performing Template:</div>
+                            <div style="background: #dcfce7; color: #166534; padding: 8px; border-radius: 4px; font-size: 14px;">
+                                "Personal Introduction" - 45% response rate
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div style="background: #f8fafc; padding: 20px; border-radius: 8px;">
+                        <h3 style="margin-bottom: 15px; color: #374151;">🎯 Conversion Funnel</h3>
+                        
+                        <div style="margin-bottom: 15px;">
+                            <div style="font-weight: 500; margin-bottom: 5px;">Artists Discovered: 127</div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: 100%"></div>
+                            </div>
+                        </div>
+                        
+                        <div style="margin-bottom: 15px;">
+                            <div style="font-weight: 500; margin-bottom: 5px;">Added to Queue: 52 (41%)</div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: 41%"></div>
+                            </div>
+                        </div>
+                        
+                        <div style="margin-bottom: 15px;">
+                            <div style="font-weight: 500; margin-bottom: 5px;">Emails Sent: 31 (60%)</div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: 60%"></div>
+                            </div>
+                        </div>
+                        
+                        <div style="margin-bottom: 15px;">
+                            <div style="font-weight: 500; margin-bottom: 5px;">Responses: 12 (39%)</div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: 39%"></div>
+                            </div>
+                        </div>
+                        
+                        <div style="margin-bottom: 15px;">
+                            <div style="font-weight: 500; margin-bottom: 5px;">Conversions: 7 (58%)</div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: 58%"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Templates Tab -->
+            <div class="tab-content" id="templates">
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                    <div style="background: #f8fafc; padding: 20px; border-radius: 8px;">
+                        <h3 style="margin-bottom: 15px; color: #374151;">📝 Email Templates</h3>
+                        
+                        <div style="margin-bottom: 20px; padding: 15px; background: white; border: 1px solid #e2e8f0; border-radius: 6px;">
+                            <div style="font-weight: 500; margin-bottom: 8px;">Personal Introduction</div>
+                            <div style="font-size: 14px; color: #64748b; margin-bottom: 8px;">Response Rate: 45%</div>
+                            <div style="font-size: 14px; line-height: 1.4;">
+                                "Hi [Artist Name], I've been following your music and I'm genuinely impressed by [specific song/release]..."
+                            </div>
+                            <div style="margin-top: 8px;">
+                                <button class="btn btn-secondary btn-small" onclick="editTemplate('personal')">✏️ Edit</button>
+                                <button class="btn btn-primary btn-small" onclick="useTemplate('personal')">📧 Use</button>
+                            </div>
+                        </div>
+                        
+                        <div style="margin-bottom: 20px; padding: 15px; background: white; border: 1px solid #e2e8f0; border-radius: 6px;">
+                            <div style="font-weight: 500; margin-bottom: 8px;">Value-Focused Pitch</div>
+                            <div style="font-size: 14px; color: #64748b; margin-bottom: 8px;">Response Rate: 32%</div>
+                            <div style="font-size: 14px; line-height: 1.4;">
+                                "Quick question: What if you could earn $10,000 from 1,000 true fans instead of needing 3.3 million streams?..."
+                            </div>
+                            <div style="margin-top: 8px;">
+                                <button class="btn btn-secondary btn-small" onclick="editTemplate('value')">✏️ Edit</button>
+                                <button class="btn btn-primary btn-small" onclick="useTemplate('value')">📧 Use</button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div style="background: #f8fafc; padding: 20px; border-radius: 8px;">
+                        <h3 style="margin-bottom: 15px; color: #374151;">🎯 A/B Testing</h3>
+                        
+                        <div style="margin-bottom: 15px; padding: 15px; background: white; border: 1px solid #e2e8f0; border-radius: 6px;">
+                            <div style="font-weight: 500; margin-bottom: 8px;">Current Test: Subject Lines</div>
+                            <div style="font-size: 14px; margin-bottom: 10px;">
+                                <div>A: "You're invited to shape the future of independent music" (48% open)</div>
+                                <div>B: "Keep 100% of your music revenue - Founding artist invitation" (52% open)</div>
+                            </div>
+                            <div style="background: #dcfce7; color: #166534; padding: 8px; border-radius: 4px; font-size: 14px;">
+                                Winner: Version B (+8% open rate)
+                            </div>
+                        </div>
+                        
+                        <button class="btn btn-primary" onclick="createABTest()">🧪 Create New A/B Test</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Tab Switching
+        function showTab(tabName) {
+            document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active'));
+            
+            document.getElementById(tabName).classList.add('active');
+            event.target.classList.add('active');
+        }
+
+        // Artist Discovery Functions
+        function searchArtists() {
+            const platform = document.getElementById('searchPlatform').value;
+            const genre = document.getElementById('genreFilter').value;
+            const keywords = document.getElementById('searchKeywords').value;
+            
+            // Mock search - in real implementation, this would call APIs
+            console.log(`Searching ${platform} for ${genre} artists with keywords: ${keywords}`);
+            
+            // Show loading state then update results
+            setTimeout(() => {
+                updateSearchResults();
+            }, 1000);
+        }
+
+        function updateSearchResults() {
+            // Mock results - in real implementation, populate from API responses
+            document.getElementById('artistResults').innerHTML = `
+                <div class="artist-card">
+                    <div class="artist-info">
+                        <div class="artist-name">New Artist Found (@newartist)</div>
+                        <div class="artist-details">Searched criteria match • Fresh discovery</div>
+                    </div>
+                    <div class="artist-actions">
+                        <button class="btn btn-secondary btn-small">👀 View</button>
+                        <button class="btn btn-primary btn-small">➕ Add to Queue</button>
+                    </div>
+                </div>
+            `;
+        }
+
+        // Outreach Functions
+        function addToQueue(artistId) {
+            console.log(`Adding ${artistId} to outreach queue`);
+            // In real implementation: API call to add to queue
+        }
+
+        function sendEmail(artistId) {
+            console.log(`Sending email to ${artistId}`);
+            // In real implementation: Send email via backend
+        }
+
+        function loadTemplate(templateType) {
+            const templates = {
+                'personal': {
+                    subject: "You're invited to shape the future of independent music",
+                    body: `Hi [Artist Name],
+
+I've been following your music and I'm genuinely impressed by [specific song/release/achievement]. Your approach to [specific aspect] really resonates with what I'm building.
+
+I'm Jason Ino, founder of Not a Label - a platform where independent artists keep 100% of their music revenue. No record deals, no middlemen, just direct connections between you and your fans.
+
+I'm personally inviting 100 founding artists to help shape this platform, and I'd love for you to be one of them.
+
+As a founding artist, you'll get:
+• Lifetime reduced platform fees (10% vs standard 15%)
+• Founding Artist badge and recognition
+• Direct input on new features
+• Priority support
+
+Interested in learning more?
+
+Best,
+Jason Ino
+Founder, Not a Label`
+                },
+                'value': {
+                    subject: "Keep 100% of your music revenue - Founding artist invitation",
+                    body: `Hi [Artist Name],
+
+Quick question: What if you could earn $10,000 from 1,000 true fans instead of needing 3.3 million streams?
+
+That's exactly what Not a Label enables. We're a direct-to-fan platform where independent artists keep 100% of their music sales revenue.
+
+The math:
+• Streaming: 3.3M streams = $10,000
+• Not a Label: 1,000 fans × $10 album = $10,000 (all yours)
+
+I'm personally inviting you to be one of our first 100 founding artists.
+
+Interested? Reply and I'll send you early access.
+
+Jason Ino
+Founder, Not a Label`
+                }
+            };
+
+            if (templates[templateType]) {
+                document.getElementById('emailSubject').value = templates[templateType].subject;
+                document.getElementById('emailContent').value = templates[templateType].body;
+            }
+        }
+
+        // Initialize with some mock data
+        document.addEventListener('DOMContentLoaded', function() {
+            // Update metrics with real-time data (mock)
+            setInterval(() => {
+                // Simulate real-time updates
+                const metrics = ['totalArtists', 'foundingArtists', 'contacted', 'responded'];
+                metrics.forEach(metric => {
+                    const element = document.getElementById(metric);
+                    if (element && Math.random() > 0.95) { // Occasional updates
+                        const current = parseInt(element.textContent);
+                        element.textContent = current + 1;
+                    }
+                });
+            }, 30000); // Update every 30 seconds
+        });
+
+        // Auto-save drafts
+        let autoSaveInterval;
+        document.getElementById('emailContent').addEventListener('input', function() {
+            clearTimeout(autoSaveInterval);
+            autoSaveInterval = setTimeout(() => {
+                console.log('Auto-saving draft...');
+                // In real implementation: Save to backend
+            }, 2000);
+        });
+    </script>
+</body>
+</html>

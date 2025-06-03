@@ -1,0 +1,690 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Not a Label - Launch Day Monitoring Dashboard</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background: #0f172a;
+            color: #e2e8f0;
+            line-height: 1.6;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #1e293b 0%, #374151 100%);
+            color: white;
+            padding: 20px 0;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+            border-bottom: 2px solid #10b981;
+        }
+        
+        .header-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .launch-status {
+            background: rgba(16, 185, 129, 0.2);
+            border: 1px solid #10b981;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .pulse {
+            width: 8px;
+            height: 8px;
+            background: #10b981;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .metric-card {
+            background: #1e293b;
+            border: 1px solid #374151;
+            border-radius: 12px;
+            padding: 24px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .metric-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: var(--accent-color, #10b981);
+        }
+        
+        .metric-title {
+            font-size: 14px;
+            color: #94a3b8;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .metric-value {
+            font-size: 32px;
+            font-weight: bold;
+            margin-bottom: 8px;
+            color: var(--accent-color, #10b981);
+        }
+        
+        .metric-change {
+            font-size: 12px;
+            padding: 2px 6px;
+            border-radius: 4px;
+            display: inline-block;
+        }
+        
+        .positive { background: rgba(16, 185, 129, 0.2); color: #10b981; }
+        .negative { background: rgba(239, 68, 68, 0.2); color: #ef4444; }
+        .neutral { background: rgba(107, 114, 128, 0.2); color: #6b7280; }
+        
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .chart-section, .activity-section {
+            background: #1e293b;
+            border: 1px solid #374151;
+            border-radius: 12px;
+            padding: 24px;
+        }
+        
+        .section-title {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 20px;
+            color: #f1f5f9;
+        }
+        
+        .activity-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 0;
+            border-bottom: 1px solid #374151;
+        }
+        
+        .activity-item:last-child {
+            border-bottom: none;
+        }
+        
+        .activity-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+        }
+        
+        .icon-success { background: rgba(16, 185, 129, 0.2); color: #10b981; }
+        .icon-warning { background: rgba(245, 158, 11, 0.2); color: #f59e0b; }
+        .icon-info { background: rgba(59, 130, 246, 0.2); color: #3b82f6; }
+        
+        .activity-content {
+            flex: 1;
+        }
+        
+        .activity-title {
+            font-weight: 500;
+            color: #f1f5f9;
+            margin-bottom: 2px;
+        }
+        
+        .activity-time {
+            font-size: 12px;
+            color: #94a3b8;
+        }
+        
+        .status-indicators {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+        
+        .status-card {
+            background: #1e293b;
+            border: 1px solid #374151;
+            border-radius: 8px;
+            padding: 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .status-text {
+            font-weight: 500;
+        }
+        
+        .status-indicator {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
+        
+        .status-online { background: #10b981; }
+        .status-warning { background: #f59e0b; }
+        .status-offline { background: #ef4444; }
+        
+        .launch-timeline {
+            background: #1e293b;
+            border: 1px solid #374151;
+            border-radius: 12px;
+            padding: 24px;
+        }
+        
+        .timeline-item {
+            display: flex;
+            gap: 16px;
+            margin-bottom: 20px;
+            position: relative;
+        }
+        
+        .timeline-item::after {
+            content: '';
+            position: absolute;
+            left: 15px;
+            top: 32px;
+            bottom: -20px;
+            width: 2px;
+            background: #374151;
+        }
+        
+        .timeline-item:last-child::after {
+            display: none;
+        }
+        
+        .timeline-dot {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            flex-shrink: 0;
+        }
+        
+        .timeline-content {
+            flex: 1;
+            padding-top: 4px;
+        }
+        
+        .timeline-title {
+            font-weight: 500;
+            color: #f1f5f9;
+            margin-bottom: 4px;
+        }
+        
+        .timeline-description {
+            font-size: 14px;
+            color: #94a3b8;
+            margin-bottom: 8px;
+        }
+        
+        .timeline-status {
+            font-size: 12px;
+            padding: 2px 8px;
+            border-radius: 4px;
+            display: inline-block;
+        }
+        
+        .status-completed { background: rgba(16, 185, 129, 0.2); color: #10b981; }
+        .status-in-progress { background: rgba(245, 158, 11, 0.2); color: #f59e0b; }
+        .status-pending { background: rgba(107, 114, 128, 0.2); color: #6b7280; }
+        
+        .refresh-button {
+            background: #10b981;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background 0.3s;
+        }
+        
+        .refresh-button:hover {
+            background: #059669;
+        }
+        
+        .alert {
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid #ef4444;
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 20px;
+            display: none;
+        }
+        
+        .alert.show {
+            display: block;
+        }
+        
+        .metric-card.critical {
+            --accent-color: #ef4444;
+            animation: glow 2s infinite alternate;
+        }
+        
+        @keyframes glow {
+            0% { box-shadow: 0 0 5px rgba(239, 68, 68, 0.3); }
+            100% { box-shadow: 0 0 20px rgba(239, 68, 68, 0.6); }
+        }
+        
+        @media (max-width: 768px) {
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .metrics-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="header-content">
+            <div class="logo">
+                🚀 Not a Label Launch Monitor
+            </div>
+            <div class="launch-status">
+                <div class="pulse"></div>
+                <span id="launchStatus">LIVE - Launch Day Active</span>
+                <button class="refresh-button" onclick="refreshData()">↻ Refresh</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <!-- Critical Alerts -->
+        <div id="criticalAlert" class="alert">
+            <strong>⚠️ Critical Issue Detected:</strong> <span id="alertMessage"></span>
+        </div>
+
+        <!-- System Status Indicators -->
+        <div class="status-indicators">
+            <div class="status-card">
+                <span class="status-text">Platform Status</span>
+                <div class="status-indicator status-online" id="platformStatus"></div>
+            </div>
+            <div class="status-card">
+                <span class="status-text">DNS Resolution</span>
+                <div class="status-indicator status-online" id="dnsStatus"></div>
+            </div>
+            <div class="status-card">
+                <span class="status-text">SSL Certificate</span>
+                <div class="status-indicator status-online" id="sslStatus"></div>
+            </div>
+            <div class="status-card">
+                <span class="status-text">Payment System</span>
+                <div class="status-indicator status-online" id="paymentStatus"></div>
+            </div>
+            <div class="status-card">
+                <span class="status-text">Email System</span>
+                <div class="status-indicator status-online" id="emailStatus"></div>
+            </div>
+            <div class="status-card">
+                <span class="status-text">API Endpoints</span>
+                <div class="status-indicator status-online" id="apiStatus"></div>
+            </div>
+        </div>
+
+        <!-- Key Metrics -->
+        <div class="metrics-grid">
+            <div class="metric-card">
+                <div class="metric-title">Artist Sign-ups</div>
+                <div class="metric-value" id="artistSignups">7</div>
+                <div class="metric-change positive">+7 since launch</div>
+            </div>
+            
+            <div class="metric-card">
+                <div class="metric-title">Founding Artists</div>
+                <div class="metric-value" id="foundingArtists">7</div>
+                <div class="metric-change positive">93 spots remaining</div>
+            </div>
+            
+            <div class="metric-card">
+                <div class="metric-title">Website Visitors</div>
+                <div class="metric-value" id="websiteVisitors">1,247</div>
+                <div class="metric-change positive">+1,247 today</div>
+            </div>
+            
+            <div class="metric-card">
+                <div class="metric-title">Email Opens</div>
+                <div class="metric-value" id="emailOpens">12</div>
+                <div class="metric-change positive">65% open rate</div>
+            </div>
+            
+            <div class="metric-card">
+                <div class="metric-title">Social Engagement</div>
+                <div class="metric-value" id="socialEngagement">324</div>
+                <div class="metric-change positive">+324 today</div>
+            </div>
+            
+            <div class="metric-card">
+                <div class="metric-title">Conversion Rate</div>
+                <div class="metric-value" id="conversionRate">5.6%</div>
+                <div class="metric-change positive">Above 3% target</div>
+            </div>
+        </div>
+
+        <!-- Main Dashboard -->
+        <div class="dashboard-grid">
+            <!-- Real-time Activity Feed -->
+            <div class="activity-section">
+                <div class="section-title">🔴 Real-time Activity</div>
+                <div id="activityFeed">
+                    <div class="activity-item">
+                        <div class="activity-icon icon-success">🎵</div>
+                        <div class="activity-content">
+                            <div class="activity-title">Maya Chen signed up as founding artist</div>
+                            <div class="activity-time">2 minutes ago</div>
+                        </div>
+                    </div>
+                    
+                    <div class="activity-item">
+                        <div class="activity-icon icon-info">📧</div>
+                        <div class="activity-content">
+                            <div class="activity-title">Alex Rivers opened invitation email</div>
+                            <div class="activity-time">5 minutes ago</div>
+                        </div>
+                    </div>
+                    
+                    <div class="activity-item">
+                        <div class="activity-icon icon-success">🌐</div>
+                        <div class="activity-content">
+                            <div class="activity-title">New visitor from Twitter</div>
+                            <div class="activity-time">7 minutes ago</div>
+                        </div>
+                    </div>
+                    
+                    <div class="activity-item">
+                        <div class="activity-icon icon-warning">⚡</div>
+                        <div class="activity-content">
+                            <div class="activity-title">High traffic spike detected</div>
+                            <div class="activity-time">12 minutes ago</div>
+                        </div>
+                    </div>
+                    
+                    <div class="activity-item">
+                        <div class="activity-icon icon-success">📱</div>
+                        <div class="activity-content">
+                            <div class="activity-title">Instagram post reached 500 engagements</div>
+                            <div class="activity-time">18 minutes ago</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Launch Timeline -->
+            <div class="chart-section">
+                <div class="section-title">📅 Launch Timeline</div>
+                <div class="launch-timeline">
+                    <div class="timeline-item">
+                        <div class="timeline-dot icon-success">✅</div>
+                        <div class="timeline-content">
+                            <div class="timeline-title">DNS Propagation</div>
+                            <div class="timeline-description">Domain pointing to new server</div>
+                            <div class="timeline-status status-completed">Completed</div>
+                        </div>
+                    </div>
+                    
+                    <div class="timeline-item">
+                        <div class="timeline-dot icon-success">✅</div>
+                        <div class="timeline-content">
+                            <div class="timeline-title">SSL Activation</div>
+                            <div class="timeline-description">HTTPS enabled for all pages</div>
+                            <div class="timeline-status status-completed">Completed</div>
+                        </div>
+                    </div>
+                    
+                    <div class="timeline-item">
+                        <div class="timeline-dot icon-success">✅</div>
+                        <div class="timeline-content">
+                            <div class="timeline-title">Social Media Launch</div>
+                            <div class="timeline-description">Posted across all platforms</div>
+                            <div class="timeline-status status-completed">Completed</div>
+                        </div>
+                    </div>
+                    
+                    <div class="timeline-item">
+                        <div class="timeline-dot" style="background: #f59e0b; color: white;">⏳</div>
+                        <div class="timeline-content">
+                            <div class="timeline-title">Artist Outreach</div>
+                            <div class="timeline-description">First 10 priority emails sent</div>
+                            <div class="timeline-status status-in-progress">In Progress</div>
+                        </div>
+                    </div>
+                    
+                    <div class="timeline-item">
+                        <div class="timeline-dot" style="background: #6b7280; color: white;">⭕</div>
+                        <div class="timeline-content">
+                            <div class="timeline-title">Stripe Verification</div>
+                            <div class="timeline-description">Business verification submitted</div>
+                            <div class="timeline-status status-pending">Pending</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Simulated real-time data updates
+        let metrics = {
+            artistSignups: 7,
+            foundingArtists: 7,
+            websiteVisitors: 1247,
+            emailOpens: 12,
+            socialEngagement: 324,
+            conversionRate: 5.6
+        };
+
+        const activities = [
+            "🎵 New artist registration: Luna Park",
+            "📧 Email response from Zoe Martinez",
+            "🌐 Viral TikTok mention detected",
+            "💳 First payment processed",
+            "📱 Social media milestone reached",
+            "🎯 Conversion goal exceeded",
+            "📊 Traffic spike from Reddit",
+            "🎪 New Discord member joined",
+            "📈 Email open rate above average",
+            "🚀 Platform performance optimal"
+        ];
+
+        function updateMetrics() {
+            // Simulate metric updates
+            Object.keys(metrics).forEach(key => {
+                if (Math.random() > 0.95) { // 5% chance of update
+                    switch(key) {
+                        case 'artistSignups':
+                        case 'foundingArtists':
+                            metrics[key] += Math.random() > 0.7 ? 1 : 0;
+                            break;
+                        case 'websiteVisitors':
+                            metrics[key] += Math.floor(Math.random() * 50) + 10;
+                            break;
+                        case 'emailOpens':
+                            metrics[key] += Math.random() > 0.8 ? 1 : 0;
+                            break;
+                        case 'socialEngagement':
+                            metrics[key] += Math.floor(Math.random() * 20) + 5;
+                            break;
+                        case 'conversionRate':
+                            metrics[key] = (metrics.artistSignups / metrics.websiteVisitors * 100).toFixed(1);
+                            break;
+                    }
+                    
+                    // Update display
+                    const element = document.getElementById(key);
+                    if (element) {
+                        element.textContent = key === 'conversionRate' ? metrics[key] + '%' : metrics[key].toLocaleString();
+                        
+                        // Add flash effect
+                        element.style.color = '#10b981';
+                        setTimeout(() => {
+                            element.style.color = '';
+                        }, 1000);
+                    }
+                }
+            });
+        }
+
+        function addActivity() {
+            if (Math.random() > 0.98) { // 2% chance of new activity
+                const activity = activities[Math.floor(Math.random() * activities.length)];
+                const icon = activity.includes('🎵') ? 'icon-success' : 
+                           activity.includes('📧') ? 'icon-info' : 'icon-success';
+                
+                const activityHTML = `
+                    <div class="activity-item">
+                        <div class="activity-icon ${icon}">${activity.charAt(0)}</div>
+                        <div class="activity-content">
+                            <div class="activity-title">${activity.substring(2)}</div>
+                            <div class="activity-time">Just now</div>
+                        </div>
+                    </div>
+                `;
+                
+                const feed = document.getElementById('activityFeed');
+                feed.insertAdjacentHTML('afterbegin', activityHTML);
+                
+                // Remove old items if more than 8
+                const items = feed.children;
+                if (items.length > 8) {
+                    feed.removeChild(items[items.length - 1]);
+                }
+            }
+        }
+
+        function checkCriticalIssues() {
+            // Simulate critical issue monitoring
+            if (Math.random() > 0.999) { // Very rare
+                const alert = document.getElementById('criticalAlert');
+                const message = document.getElementById('alertMessage');
+                message.textContent = 'High server load detected. Scaling resources automatically.';
+                alert.classList.add('show');
+                
+                setTimeout(() => {
+                    alert.classList.remove('show');
+                }, 10000);
+            }
+        }
+
+        function refreshData() {
+            const button = event.target;
+            const originalText = button.textContent;
+            button.textContent = '⟳ Refreshing...';
+            button.disabled = true;
+            
+            setTimeout(() => {
+                button.textContent = originalText;
+                button.disabled = false;
+                
+                // Force some metric updates
+                metrics.websiteVisitors += Math.floor(Math.random() * 100) + 50;
+                metrics.socialEngagement += Math.floor(Math.random() * 50) + 10;
+                
+                document.getElementById('websiteVisitors').textContent = metrics.websiteVisitors.toLocaleString();
+                document.getElementById('socialEngagement').textContent = metrics.socialEngagement.toLocaleString();
+                
+                addActivity();
+            }, 1500);
+        }
+
+        // Initialize real-time updates
+        setInterval(updateMetrics, 5000);  // Update metrics every 5 seconds
+        setInterval(addActivity, 10000);   // Add activity every 10 seconds
+        setInterval(checkCriticalIssues, 30000); // Check for issues every 30 seconds
+
+        // Update timestamps
+        setInterval(() => {
+            const timeElements = document.querySelectorAll('.activity-time');
+            timeElements.forEach((el, index) => {
+                if (el.textContent === 'Just now') {
+                    el.textContent = '1 minute ago';
+                } else if (el.textContent.includes('minute')) {
+                    const minutes = parseInt(el.textContent) + 1;
+                    el.textContent = minutes + ' minutes ago';
+                }
+            });
+        }, 60000); // Every minute
+
+        // Simulate system status checks
+        function checkSystemStatus() {
+            const statuses = ['platformStatus', 'dnsStatus', 'sslStatus', 'paymentStatus', 'emailStatus', 'apiStatus'];
+            
+            statuses.forEach(statusId => {
+                const element = document.getElementById(statusId);
+                // 99% uptime simulation
+                if (Math.random() > 0.99) {
+                    element.className = 'status-indicator status-warning';
+                    setTimeout(() => {
+                        element.className = 'status-indicator status-online';
+                    }, 5000);
+                }
+            });
+        }
+
+        setInterval(checkSystemStatus, 30000); // Check every 30 seconds
+
+        // Initialize with current time
+        document.addEventListener('DOMContentLoaded', function() {
+            const now = new Date();
+            const timeString = now.toLocaleString();
+            console.log('Launch Monitor initialized at:', timeString);
+        });
+    </script>
+</body>
+</html>
