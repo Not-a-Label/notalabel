@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Not a Label - Artist Outreach Tracker</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-900 text-white">
+    <div class="container mx-auto px-4 py-8 max-w-6xl">
+        <div class="mb-8">
+            <h1 class="text-3xl font-bold mb-2">🎯 Founding Artist Outreach Tracker</h1>
+            <p class="text-gray-400">Track your progress in recruiting the first 10 founding artists</p>
+        </div>
+
+        <!-- Stats -->
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
+            <div class="bg-gray-800 rounded-lg p-4">
+                <div class="text-2xl font-bold" id="totalContacted">0</div>
+                <div class="text-gray-400 text-sm">Contacted</div>
+            </div>
+            <div class="bg-gray-800 rounded-lg p-4">
+                <div class="text-2xl font-bold text-yellow-500" id="totalResponded">0</div>
+                <div class="text-gray-400 text-sm">Responded</div>
+            </div>
+            <div class="bg-gray-800 rounded-lg p-4">
+                <div class="text-2xl font-bold text-green-500" id="totalOnboarded">0</div>
+                <div class="text-gray-400 text-sm">Onboarded</div>
+            </div>
+            <div class="bg-gray-800 rounded-lg p-4">
+                <div class="text-2xl font-bold text-purple-500" id="conversionRate">0%</div>
+                <div class="text-gray-400 text-sm">Conversion Rate</div>
+            </div>
+        </div>
+
+        <!-- Add New Artist -->
+        <div class="bg-gray-800 rounded-lg p-6 mb-6">
+            <h2 class="text-xl font-bold mb-4">Add Artist to Track</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                <input type="text" id="artistName" placeholder="Artist Name" class="bg-gray-700 rounded px-4 py-2">
+                <input type="text" id="artistGenre" placeholder="Genre" class="bg-gray-700 rounded px-4 py-2">
+                <input type="text" id="artistFollowers" placeholder="Followers (e.g. 10K)" class="bg-gray-700 rounded px-4 py-2">
+                <select id="artistPlatform" class="bg-gray-700 rounded px-4 py-2">
+                    <option value="">Contact Platform</option>
+                    <option value="email">Email</option>
+                    <option value="instagram">Instagram</option>
+                    <option value="twitter">Twitter</option>
+                    <option value="website">Website</option>
+                </select>
+            </div>
+            <button onclick="addArtist()" class="mt-4 bg-purple-600 hover:bg-purple-700 px-6 py-2 rounded-lg font-semibold">
+                Add Artist
+            </button>
+        </div>
+
+        <!-- Artists Table -->
+        <div class="bg-gray-800 rounded-lg overflow-hidden">
+            <table class="w-full">
+                <thead class="bg-gray-700">
+                    <tr>
+                        <th class="px-4 py-3 text-left">Artist</th>
+                        <th class="px-4 py-3 text-left">Genre</th>
+                        <th class="px-4 py-3 text-left">Followers</th>
+                        <th class="px-4 py-3 text-left">Platform</th>
+                        <th class="px-4 py-3 text-left">Status</th>
+                        <th class="px-4 py-3 text-left">Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="artistsTable">
+                    <!-- Artists will be added here -->
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Email Templates -->
+        <div class="mt-8 bg-gray-800 rounded-lg p-6">
+            <h2 class="text-xl font-bold mb-4">Quick Copy Templates</h2>
+            <div class="space-y-4">
+                <div>
+                    <h3 class="font-semibold mb-2">Instagram DM</h3>
+                    <textarea class="w-full bg-gray-700 rounded p-3 text-sm" rows="4" readonly>Hey [Name]! Huge fan of [song]. Your DIY approach is exactly why I built Not a Label - a platform where artists keep 100% ownership and revenue. Would love to have you as one of our 10 founding artists (lifetime free Pro account). Interested? 🎵</textarea>
+                </div>
+                <div>
+                    <h3 class="font-semibold mb-2">Email Subject Lines</h3>
+                    <div class="bg-gray-700 rounded p-3 text-sm space-y-1">
+                        <div>• Founding Artist Invitation - Not a Label</div>
+                        <div>• Love your DIY approach - invitation inside</div>
+                        <div>• 100% revenue for artists - you in?</div>
+                        <div>• Building something new for independent artists</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Load data from localStorage
+        let artists = JSON.parse(localStorage.getItem('outreachArtists') || '[]');
+
+        // Sample data to start with
+        if (artists.length === 0) {
+            artists = [
+                { name: 'Clairo', genre: 'Bedroom Pop', followers: '5M', platform: 'instagram', status: 'not_contacted' },
+                { name: 'Rex Orange County', genre: 'Indie Pop', followers: '3M', platform: 'email', status: 'not_contacted' },
+                { name: 'Russ', genre: 'Hip-Hop', followers: '3M', platform: 'twitter', status: 'not_contacted' },
+                { name: 'FKA twigs', genre: 'Alt R&B', followers: '2M', platform: 'email', status: 'not_contacted' },
+                { name: 'Mac DeMarco', genre: 'Indie Rock', followers: '1M', platform: 'email', status: 'not_contacted' }
+            ];
+            saveData();
+        }
+
+        function saveData() {
+            localStorage.setItem('outreachArtists', JSON.stringify(artists));
+            renderTable();
+            updateStats();
+        }
+
+        function addArtist() {
+            const name = document.getElementById('artistName').value;
+            const genre = document.getElementById('artistGenre').value;
+            const followers = document.getElementById('artistFollowers').value;
+            const platform = document.getElementById('artistPlatform').value;
+
+            if (name && genre && followers && platform) {
+                artists.push({
+                    name,
+                    genre,
+                    followers,
+                    platform,
+                    status: 'not_contacted'
+                });
+                saveData();
+                
+                // Clear form
+                document.getElementById('artistName').value = '';
+                document.getElementById('artistGenre').value = '';
+                document.getElementById('artistFollowers').value = '';
+                document.getElementById('artistPlatform').value = '';
+            }
+        }
+
+        function updateStatus(index, status) {
+            artists[index].status = status;
+            if (status === 'contacted') {
+                artists[index].contactedDate = new Date().toLocaleDateString();
+            }
+            saveData();
+        }
+
+        function removeArtist(index) {
+            if (confirm('Remove this artist from tracking?')) {
+                artists.splice(index, 1);
+                saveData();
+            }
+        }
+
+        function getStatusBadge(status) {
+            const badges = {
+                'not_contacted': '<span class="px-2 py-1 bg-gray-600 rounded text-xs">Not Contacted</span>',
+                'contacted': '<span class="px-2 py-1 bg-blue-600 rounded text-xs">Contacted</span>',
+                'responded': '<span class="px-2 py-1 bg-yellow-600 rounded text-xs">Responded</span>',
+                'interested': '<span class="px-2 py-1 bg-purple-600 rounded text-xs">Interested</span>',
+                'onboarded': '<span class="px-2 py-1 bg-green-600 rounded text-xs">Onboarded</span>',
+                'declined': '<span class="px-2 py-1 bg-red-600 rounded text-xs">Declined</span>'
+            };
+            return badges[status] || badges['not_contacted'];
+        }
+
+        function renderTable() {
+            const tbody = document.getElementById('artistsTable');
+            tbody.innerHTML = artists.map((artist, index) => `
+                <tr class="border-t border-gray-700">
+                    <td class="px-4 py-3 font-semibold">${artist.name}</td>
+                    <td class="px-4 py-3 text-gray-400">${artist.genre}</td>
+                    <td class="px-4 py-3">${artist.followers}</td>
+                    <td class="px-4 py-3 text-gray-400">${artist.platform}</td>
+                    <td class="px-4 py-3">${getStatusBadge(artist.status)}</td>
+                    <td class="px-4 py-3">
+                        <select onchange="updateStatus(${index}, this.value)" class="bg-gray-700 rounded px-2 py-1 text-sm">
+                            <option value="not_contacted" ${artist.status === 'not_contacted' ? 'selected' : ''}>Not Contacted</option>
+                            <option value="contacted" ${artist.status === 'contacted' ? 'selected' : ''}>Contacted</option>
+                            <option value="responded" ${artist.status === 'responded' ? 'selected' : ''}>Responded</option>
+                            <option value="interested" ${artist.status === 'interested' ? 'selected' : ''}>Interested</option>
+                            <option value="onboarded" ${artist.status === 'onboarded' ? 'selected' : ''}>Onboarded</option>
+                            <option value="declined" ${artist.status === 'declined' ? 'selected' : ''}>Declined</option>
+                        </select>
+                        <button onclick="removeArtist(${index})" class="ml-2 text-red-500 hover:text-red-400 text-sm">Remove</button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function updateStats() {
+            const contacted = artists.filter(a => a.status !== 'not_contacted').length;
+            const responded = artists.filter(a => ['responded', 'interested', 'onboarded', 'declined'].includes(a.status)).length;
+            const onboarded = artists.filter(a => a.status === 'onboarded').length;
+            const conversionRate = contacted > 0 ? Math.round((onboarded / contacted) * 100) : 0;
+
+            document.getElementById('totalContacted').textContent = contacted;
+            document.getElementById('totalResponded').textContent = responded;
+            document.getElementById('totalOnboarded').textContent = onboarded;
+            document.getElementById('conversionRate').textContent = conversionRate + '%';
+        }
+
+        // Initial render
+        renderTable();
+        updateStats();
+    </script>
+</body>
+</html>

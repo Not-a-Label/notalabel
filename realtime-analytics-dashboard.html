@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Not a Label - Real-Time Analytics</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        .pulse { animation: pulse 2s infinite; }
+    </style>
+</head>
+<body class="bg-gray-900 text-white">
+    <div class="container mx-auto px-4 py-8">
+        <!-- Header -->
+        <div class="text-center mb-8">
+            <h1 class="text-4xl font-bold mb-2 bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
+                Not a Label Analytics
+            </h1>
+            <p class="text-gray-400">Real-time platform insights</p>
+            <div class="mt-4">
+                <span class="inline-flex items-center">
+                    <span class="h-3 w-3 bg-green-500 rounded-full pulse mr-2"></span>
+                    <span class="text-sm">Live Updates</span>
+                </span>
+            </div>
+        </div>
+
+        <!-- Key Metrics -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+            <!-- Active Users -->
+            <div class="bg-gray-800 rounded-lg p-6">
+                <div class="flex items-center justify-between mb-2">
+                    <h3 class="text-gray-400 text-sm">Active Now</h3>
+                    <svg class="w-5 h-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path>
+                    </svg>
+                </div>
+                <div class="text-3xl font-bold" id="activeUsers">0</div>
+                <div class="text-xs text-gray-500 mt-1">users online</div>
+            </div>
+
+            <!-- Today's Signups -->
+            <div class="bg-gray-800 rounded-lg p-6">
+                <div class="flex items-center justify-between mb-2">
+                    <h3 class="text-gray-400 text-sm">New Artists Today</h3>
+                    <svg class="w-5 h-5 text-purple-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"></path>
+                    </svg>
+                </div>
+                <div class="text-3xl font-bold" id="newArtists">0</div>
+                <div class="text-xs text-gray-500 mt-1">joined today</div>
+            </div>
+
+            <!-- Tracks Played -->
+            <div class="bg-gray-800 rounded-lg p-6">
+                <div class="flex items-center justify-between mb-2">
+                    <h3 class="text-gray-400 text-sm">Plays Today</h3>
+                    <svg class="w-5 h-5 text-pink-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"></path>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                </div>
+                <div class="text-3xl font-bold" id="playsToday">0</div>
+                <div class="text-xs text-gray-500 mt-1">track plays</div>
+            </div>
+
+            <!-- Revenue -->
+            <div class="bg-gray-800 rounded-lg p-6">
+                <div class="flex items-center justify-between mb-2">
+                    <h3 class="text-gray-400 text-sm">Revenue Today</h3>
+                    <svg class="w-5 h-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                </div>
+                <div class="text-3xl font-bold">$<span id="revenueToday">0</span></div>
+                <div class="text-xs text-gray-500 mt-1">in transactions</div>
+            </div>
+        </div>
+
+        <!-- Charts -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+            <!-- User Activity Chart -->
+            <div class="bg-gray-800 rounded-lg p-6">
+                <h3 class="text-lg font-semibold mb-4">User Activity (Last Hour)</h3>
+                <canvas id="activityChart" height="200"></canvas>
+            </div>
+
+            <!-- Geographic Distribution -->
+            <div class="bg-gray-800 rounded-lg p-6">
+                <h3 class="text-lg font-semibold mb-4">Active Regions</h3>
+                <canvas id="geoChart" height="200"></canvas>
+            </div>
+        </div>
+
+        <!-- Live Feed -->
+        <div class="bg-gray-800 rounded-lg p-6">
+            <h3 class="text-lg font-semibold mb-4">Live Activity Feed</h3>
+            <div id="activityFeed" class="space-y-3 max-h-96 overflow-y-auto">
+                <!-- Activity items will be added here -->
+            </div>
+        </div>
+
+        <!-- Popular Tracks -->
+        <div class="mt-6 bg-gray-800 rounded-lg p-6">
+            <h3 class="text-lg font-semibold mb-4">Trending Tracks (Last 24h)</h3>
+            <div id="trendingTracks" class="space-y-2">
+                <!-- Tracks will be added here -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Initialize Charts
+        const activityCtx = document.getElementById('activityChart').getContext('2d');
+        const activityChart = new Chart(activityCtx, {
+            type: 'line',
+            data: {
+                labels: [],
+                datasets: [{
+                    label: 'Active Users',
+                    data: [],
+                    borderColor: '#8B5CF6',
+                    backgroundColor: 'rgba(139, 92, 246, 0.1)',
+                    tension: 0.4,
+                    fill: true
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        grid: { color: 'rgba(255, 255, 255, 0.1)' },
+                        ticks: { color: '#9CA3AF' }
+                    },
+                    x: {
+                        grid: { display: false },
+                        ticks: { color: '#9CA3AF' }
+                    }
+                }
+            }
+        });
+
+        const geoCtx = document.getElementById('geoChart').getContext('2d');
+        const geoChart = new Chart(geoCtx, {
+            type: 'doughnut',
+            data: {
+                labels: ['North America', 'Europe', 'Asia', 'Other'],
+                datasets: [{
+                    data: [45, 30, 20, 5],
+                    backgroundColor: [
+                        '#8B5CF6',
+                        '#EC4899',
+                        '#10B981',
+                        '#F59E0B'
+                    ],
+                    borderWidth: 0
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'right',
+                        labels: { color: '#9CA3AF' }
+                    }
+                }
+            }
+        });
+
+        // Mock data generator
+        let activityData = [];
+        const activities = [
+            { type: 'signup', icon: '👤', color: 'text-green-400' },
+            { type: 'track_upload', icon: '🎵', color: 'text-purple-400' },
+            { type: 'track_play', icon: '▶️', color: 'text-pink-400' },
+            { type: 'follow', icon: '❤️', color: 'text-red-400' },
+            { type: 'payment', icon: '💰', color: 'text-yellow-400' }
+        ];
+
+        const artistNames = ['Luna Rose', 'Beat Master', 'Indie Soul', 'Neon Dreams', 'Echo Valley'];
+        const trackNames = ['Midnight Vibes', 'Summer Breeze', 'Electric Dreams', 'Lost in Time', 'City Lights'];
+
+        function generateActivity() {
+            const activity = activities[Math.floor(Math.random() * activities.length)];
+            const artist = artistNames[Math.floor(Math.random() * artistNames.length)];
+            const track = trackNames[Math.floor(Math.random() * trackNames.length)];
+            
+            let message = '';
+            switch(activity.type) {
+                case 'signup':
+                    message = `${artist} joined Not a Label`;
+                    break;
+                case 'track_upload':
+                    message = `${artist} uploaded "${track}"`;
+                    break;
+                case 'track_play':
+                    message = `Someone played "${track}" by ${artist}`;
+                    break;
+                case 'follow':
+                    message = `New follower for ${artist}`;
+                    break;
+                case 'payment':
+                    message = `${artist} received a $${(Math.random() * 50 + 5).toFixed(2)} tip`;
+                    break;
+            }
+
+            return {
+                ...activity,
+                message,
+                time: new Date().toLocaleTimeString()
+            };
+        }
+
+        function updateMetrics() {
+            // Update numbers with slight variations
+            const activeUsers = Math.floor(Math.random() * 50 + 100);
+            document.getElementById('activeUsers').textContent = activeUsers;
+            document.getElementById('newArtists').textContent = Math.floor(Math.random() * 10 + 5);
+            document.getElementById('playsToday').textContent = Math.floor(Math.random() * 1000 + 5000);
+            document.getElementById('revenueToday').textContent = (Math.random() * 500 + 1000).toFixed(2);
+
+            // Update activity chart
+            const now = new Date();
+            activityData.push({
+                time: now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+                value: activeUsers
+            });
+
+            if (activityData.length > 12) {
+                activityData.shift();
+            }
+
+            activityChart.data.labels = activityData.map(d => d.time);
+            activityChart.data.datasets[0].data = activityData.map(d => d.value);
+            activityChart.update();
+
+            // Add activity to feed
+            if (Math.random() > 0.7) {
+                const activity = generateActivity();
+                const feed = document.getElementById('activityFeed');
+                const item = document.createElement('div');
+                item.className = 'flex items-center space-x-3 p-3 bg-gray-700 rounded-lg opacity-0 transition-opacity duration-500';
+                item.innerHTML = `
+                    <span class="text-2xl">${activity.icon}</span>
+                    <div class="flex-1">
+                        <p class="${activity.color}">${activity.message}</p>
+                        <p class="text-xs text-gray-500">${activity.time}</p>
+                    </div>
+                `;
+                feed.insertBefore(item, feed.firstChild);
+                setTimeout(() => item.classList.remove('opacity-0'), 10);
+                
+                // Keep only last 10 items
+                while (feed.children.length > 10) {
+                    feed.removeChild(feed.lastChild);
+                }
+            }
+
+            // Update trending tracks
+            if (Math.random() > 0.9) {
+                updateTrendingTracks();
+            }
+        }
+
+        function updateTrendingTracks() {
+            const container = document.getElementById('trendingTracks');
+            container.innerHTML = '';
+            
+            for (let i = 0; i < 5; i++) {
+                const plays = Math.floor(Math.random() * 5000 + 1000);
+                const track = trackNames[i];
+                const artist = artistNames[i];
+                
+                const item = document.createElement('div');
+                item.className = 'flex items-center justify-between p-3 bg-gray-700 rounded-lg';
+                item.innerHTML = `
+                    <div>
+                        <p class="font-semibold">${i + 1}. ${track}</p>
+                        <p class="text-sm text-gray-400">by ${artist}</p>
+                    </div>
+                    <div class="text-right">
+                        <p class="text-sm font-semibold">${plays.toLocaleString()}</p>
+                        <p class="text-xs text-gray-400">plays</p>
+                    </div>
+                `;
+                container.appendChild(item);
+            }
+        }
+
+        // Initialize
+        updateMetrics();
+        updateTrendingTracks();
+        setInterval(updateMetrics, 3000);
+
+        // Simulate initial data
+        for (let i = 0; i < 5; i++) {
+            setTimeout(() => {
+                const activity = generateActivity();
+                const feed = document.getElementById('activityFeed');
+                const item = document.createElement('div');
+                item.className = 'flex items-center space-x-3 p-3 bg-gray-700 rounded-lg';
+                item.innerHTML = `
+                    <span class="text-2xl">${activity.icon}</span>
+                    <div class="flex-1">
+                        <p class="${activity.color}">${activity.message}</p>
+                        <p class="text-xs text-gray-500">${activity.time}</p>
+                    </div>
+                `;
+                feed.appendChild(item);
+            }, i * 500);
+        }
+    </script>
+</body>
+</html>
