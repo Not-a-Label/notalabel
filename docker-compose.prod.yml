@@ -1,0 +1,197 @@
+version: '3.8'
+
+services:
+  # PostgreSQL Database
+  postgres:
+    image: postgres:15-alpine
+    container_name: not-a-label-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: not_a_label
+      POSTGRES_USER: not_a_label_user
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_INITDB_ARGS: "--encoding=UTF8 --locale=C"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./init-db.sql:/docker-entrypoint-initdb.d/init-db.sql:ro
+    ports:
+      - "5432:5432"
+    networks:
+      - not-a-label-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U not_a_label_user -d not_a_label"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Redis Cache
+  redis:
+    image: redis:7-alpine
+    container_name: not-a-label-redis
+    restart: unless-stopped
+    command: redis-server --appendonly yes --requirepass ${DB_PASSWORD}
+    volumes:
+      - redis_data:/data
+    ports:
+      - "6379:6379"
+    networks:
+      - not-a-label-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "--raw", "incr", "ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Backend API - Enhanced Analytics
+  backend:
+    build:
+      context: ./not-a-label-backend
+      dockerfile: Dockerfile.simple
+    container_name: not-a-label-backend
+    restart: unless-stopped
+    environment:
+      NODE_ENV: production
+      PORT: 3001
+      DATABASE_URL: postgresql://not_a_label_user:${POSTGRES_PASSWORD}@postgres:5432/not_a_label
+      REDIS_URL: redis://:${DB_PASSWORD}@redis:6379
+      JWT_SECRET: ${JWT_SECRET}
+      SESSION_SECRET: ${SESSION_SECRET}
+      FRONTEND_URL: https://not-a-label.art
+      ALLOWED_ORIGINS: https://not-a-label.art,https://www.not-a-label.art
+      
+      # AI Configuration
+      OPENAI_API_KEY: ${OPENAI_API_KEY}
+      AI_MODEL: gpt-4
+      MAX_AI_REQUESTS_PER_USER: 100
+      
+      # Third-party APIs
+      SPOTIFY_CLIENT_ID: ${SPOTIFY_CLIENT_ID}
+      SPOTIFY_CLIENT_SECRET: ${SPOTIFY_CLIENT_SECRET}
+      
+      # Email
+      EMAIL_HOST: ${EMAIL_HOST}
+      EMAIL_PORT: ${EMAIL_PORT}
+      EMAIL_USER: ${EMAIL_USER}
+      EMAIL_PASS: ${EMAIL_PASS}
+      EMAIL_FROM: "Not a Label <${EMAIL_USER}>"
+      
+      # Stripe
+      STRIPE_SECRET_KEY: ${STRIPE_SECRET_KEY}
+      STRIPE_WEBHOOK_SECRET: ${STRIPE_WEBHOOK_SECRET}
+      
+      # Analytics
+      GOOGLE_ANALYTICS_ID: ${GOOGLE_ANALYTICS_ID}
+      MIXPANEL_TOKEN: ${MIXPANEL_TOKEN}
+    ports:
+      - "3001:3001"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - not-a-label-network
+    volumes:
+      - ./not-a-label-backend/uploads:/app/uploads
+      - ./not-a-label-backend/logs:/app/logs
+    healthcheck:
+      test: ["CMD", "node", "-e", "require('http').get('http://localhost:3001/health', (r) => process.exit(r.statusCode === 200 ? 0 : 1))"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Frontend Application
+  frontend:
+    build:
+      context: ./not-a-label-frontend
+      dockerfile: Dockerfile.new
+    container_name: not-a-label-frontend
+    restart: unless-stopped
+    environment:
+      NODE_ENV: production
+      NEXT_PUBLIC_API_URL: https://api.not-a-label.art
+      NEXTAUTH_URL: https://not-a-label.art
+      NEXTAUTH_SECRET: ${NEXTAUTH_SECRET}
+      
+      # Enhanced Analytics Features
+      NEXT_PUBLIC_ENABLE_ENHANCED_ANALYTICS: "true"
+      NEXT_PUBLIC_ENABLE_AI_ASSISTANT: "true"
+      NEXT_PUBLIC_ENABLE_PREDICTIONS: "true"
+      NEXT_PUBLIC_ENABLE_RECOMMENDATIONS: "true"
+      
+      # Stripe
+      NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY: ${NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY}
+      
+      # OAuth
+      SPOTIFY_CLIENT_ID: ${SPOTIFY_CLIENT_ID}
+      GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID}
+      
+      # Analytics
+      NEXT_PUBLIC_GA_ID: ${GOOGLE_ANALYTICS_ID}
+      NEXT_PUBLIC_MIXPANEL_TOKEN: ${MIXPANEL_TOKEN}
+      
+      # Domain
+      NEXT_PUBLIC_DOMAIN: https://not-a-label.art
+    ports:
+      - "3000:3000"
+    depends_on:
+      backend:
+        condition: service_healthy
+    networks:
+      - not-a-label-network
+    healthcheck:
+      test: ["CMD", "node", "-e", "require('http').get('http://localhost:3000', (r) => process.exit(r.statusCode === 200 ? 0 : 1))"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Nginx Reverse Proxy
+  nginx:
+    image: nginx:alpine
+    container_name: not-a-label-nginx
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/sites-enabled:/etc/nginx/sites-enabled:ro
+      - ./certbot/conf:/etc/letsencrypt:ro
+      - ./certbot/www:/var/www/certbot:ro
+      - ./nginx/logs:/var/log/nginx
+    depends_on:
+      frontend:
+        condition: service_healthy
+      backend:
+        condition: service_healthy
+    networks:
+      - not-a-label-network
+    healthcheck:
+      test: ["CMD", "nginx", "-t"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Certbot for SSL certificates
+  certbot:
+    image: certbot/certbot
+    container_name: not-a-label-certbot
+    volumes:
+      - ./certbot/conf:/etc/letsencrypt
+      - ./certbot/www:/var/www/certbot
+    entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done;'"
+    networks:
+      - not-a-label-network
+
+volumes:
+  postgres_data:
+    driver: local
+  redis_data:
+    driver: local
+
+networks:
+  not-a-label-network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.20.0.0/16

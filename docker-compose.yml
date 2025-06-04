@@ -1,0 +1,110 @@
+version: '3.8'
+
+services:
+  # PostgreSQL Database
+  postgres:
+    image: postgres:15-alpine
+    container_name: not-a-label-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: not_a_label
+      POSTGRES_USER: not_a_label_user
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-secure_password}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    networks:
+      - not-a-label-network
+
+  # Redis Cache
+  redis:
+    image: redis:7-alpine
+    container_name: not-a-label-redis
+    restart: unless-stopped
+    command: redis-server --appendonly yes
+    volumes:
+      - redis_data:/data
+    ports:
+      - "6379:6379"
+    networks:
+      - not-a-label-network
+
+  # Backend API
+  backend:
+    build:
+      context: ./not-a-label-backend
+      dockerfile: Dockerfile
+    container_name: not-a-label-backend
+    restart: unless-stopped
+    env_file:
+      - ./not-a-label-backend/.env.production
+    environment:
+      DATABASE_URL: postgresql://not_a_label_user:${DB_PASSWORD:-secure_password}@postgres:5432/not_a_label
+      REDIS_URL: redis://redis:6379
+      NODE_ENV: production
+    ports:
+      - "3001:3001"
+    depends_on:
+      - postgres
+      - redis
+    networks:
+      - not-a-label-network
+    volumes:
+      - ./not-a-label-backend/uploads:/app/uploads
+
+  # Frontend Application
+  frontend:
+    build:
+      context: ./not-a-label-frontend
+      dockerfile: Dockerfile
+    container_name: not-a-label-frontend
+    restart: unless-stopped
+    env_file:
+      - ./not-a-label-frontend/.env.production
+    environment:
+      NODE_ENV: production
+    ports:
+      - "3000:3000"
+    depends_on:
+      - backend
+    networks:
+      - not-a-label-network
+
+  # Nginx Reverse Proxy
+  nginx:
+    image: nginx:alpine
+    container_name: not-a-label-nginx
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/sites-enabled:/etc/nginx/sites-enabled:ro
+      - ./certbot/conf:/etc/letsencrypt
+      - ./certbot/www:/var/www/certbot
+    depends_on:
+      - frontend
+      - backend
+    networks:
+      - not-a-label-network
+
+  # Certbot for SSL certificates
+  certbot:
+    image: certbot/certbot
+    container_name: not-a-label-certbot
+    volumes:
+      - ./certbot/conf:/etc/letsencrypt
+      - ./certbot/www:/var/www/certbot
+    entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done;'"
+    networks:
+      - not-a-label-network
+
+volumes:
+  postgres_data:
+  redis_data:
+
+networks:
+  not-a-label-network:
+    driver: bridge
